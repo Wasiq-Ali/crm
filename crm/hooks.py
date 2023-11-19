@@ -7,211 +7,72 @@ app_description = "ParaLogic CRM"
 app_email = "info@paralogic.io"
 app_license = "GNU General Public License (v3)"
 
-# Includes in <head>
-# ------------------
+app_include_js = "crm.bundle.js"
+app_include_css = "crm.bundle.css"
 
-# include js, css files in header of desk.html
-# app_include_css = "/assets/crm/css/crm.css"
-# app_include_js = "/assets/crm/js/crm.js"
+doctype_js = {
+	"Communication": "overrides/communication_hooks.js",
+	"Event": "overrides/event_hooks.js",
+}
 
-# include js, css files in header of web template
-# web_include_css = "/assets/crm/css/crm.css"
-# web_include_js = "/assets/crm/js/crm.js"
+doc_events = {
+	"Contact": {
+		"after_insert": "crm.communication.doctype.call_log.call_log.set_caller_information",
+	},
+	"Lead": {
+		"after_insert": "crm.communication.doctype.call_log.call_log.set_caller_information"
+	},
+	"Email Unsubscribe": {
+		"after_insert": "crm.crm.doctype.email_campaign.email_campaign.unsubscribe_recipient"
+	}
+}
 
-# include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "crm/public/scss/website"
+scheduler_events = {
+	"all": [
+		"crm.crm.doctype.appointment.appointment.send_appointment_reminder_notifications",
+	],
+	"daily": [
+		"crm.crm.doctype.opportunity.opportunity.auto_mark_opportunity_as_lost",
+		"crm.crm.doctype.appointment.appointment.auto_mark_missed",
+		"crm.crm.doctype.contract.contract.update_status_for_contracts",
+		"crm.crm.doctype.email_campaign.email_campaign.send_email_to_leads_or_contacts",
+		"crm.crm.doctype.email_campaign.email_campaign.set_email_campaign_status",
+	]
+}
 
-# include js, css files in header of web form
-# webform_include_js = {"doctype": "public/js/doctype.js"}
-# webform_include_css = {"doctype": "public/css/doctype.css"}
+default_mail_footer = ""
 
-# include js in page
-# page_js = {"page" : "public/js/file.js"}
+email_append_to = ["Lead", "Opportunity"]
 
-# include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
-# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+sounds = [
+	{"name": "incoming-call", "src": "/assets/crm/sounds/incoming-call.mp3", "volume": 0.2},
+	{"name": "call-disconnect", "src": "/assets/crm/sounds/call-disconnect.mp3", "volume": 0.2},
+]
 
-# Home Pages
-# ----------
+user_data_fields = [
+	{
+		"doctype": "Lead",
+		"match_field": "email_id",
+		"personal_fields": [
+			"lead_name",
+			"phone", "mobile_no", "mobile_no_2", "fax", "website",
+			"address_line1", "address_line2", "city", "state",
+		],
+	},
+	{
+		"doctype": "Opportunity",
+		"match_field": 'contact_email',
+		"personal_fields": [
+			"customer_name", "contact_display",
+			"contact_mobile", "contact_phone", "contact_phone",
+			"address_display"
+		],
+	}
+]
 
-# application home page (will override Website Settings)
-# home_page = "login"
-
-# website user home page (by Role)
-# role_home_page = {
-#	"Role": "home_page"
-# }
-
-# Generators
-# ----------
-
-# automatically create page for each record of this doctype
-# website_generators = ["Web Page"]
-
-# Jinja
-# ----------
-
-# add methods and filters to jinja environment
-# jinja = {
-#	"methods": "crm.utils.jinja_methods",
-#	"filters": "crm.utils.jinja_filters"
-# }
-
-# Installation
-# ------------
-
-# before_install = "crm.install.before_install"
-# after_install = "crm.install.after_install"
-
-# Uninstallation
-# ------------
-
-# before_uninstall = "crm.uninstall.before_uninstall"
-# after_uninstall = "crm.uninstall.after_uninstall"
-
-# Integration Setup
-# ------------------
-# To set up dependencies/integrations with other apps
-# Name of the app being installed is passed as an argument
-
-# before_app_install = "crm.utils.before_app_install"
-# after_app_install = "crm.utils.after_app_install"
-
-# Integration Cleanup
-# -------------------
-# To clean up dependencies/integrations with other apps
-# Name of the app being uninstalled is passed as an argument
-
-# before_app_uninstall = "crm.utils.before_app_uninstall"
-# after_app_uninstall = "crm.utils.after_app_uninstall"
-
-# Desk Notifications
-# ------------------
-# See frappe.core.notifications.get_notification_config
-
-# notification_config = "crm.notifications.get_notification_config"
-
-# Permissions
-# -----------
-# Permissions evaluated in scripted ways
-
-# permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-#	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
-
-# DocType Class
-# ---------------
-# Override standard doctype classes
-
-# override_doctype_class = {
-#	"ToDo": "custom_app.overrides.CustomToDo"
-# }
-
-# Document Events
-# ---------------
-# Hook on document methods and events
-
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
-# }
-
-# Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-#	"all": [
-#		"crm.tasks.all"
-#	],
-#	"daily": [
-#		"crm.tasks.daily"
-#	],
-#	"hourly": [
-#		"crm.tasks.hourly"
-#	],
-#	"weekly": [
-#		"crm.tasks.weekly"
-#	],
-#	"monthly": [
-#		"crm.tasks.monthly"
-#	],
-# }
-
-# Testing
-# -------
-
-# before_tests = "crm.install.before_tests"
-
-# Overriding Methods
-# ------------------------------
-#
-# override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "crm.event.get_events"
-# }
-#
-# each overriding function accepts a `data` argument;
-# generated from the base implementation of the doctype dashboard,
-# along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-#	"Task": "crm.task.get_dashboard_data"
-# }
-
-# exempt linked doctypes from being automatically cancelled
-#
-# auto_cancel_exempted_doctypes = ["Auto Repeat"]
-
-# Ignore links to specified DocTypes when deleting documents
-# -----------------------------------------------------------
-
-# ignore_links_on_delete = ["Communication", "ToDo"]
-
-# Request Events
-# ----------------
-# before_request = ["crm.utils.before_request"]
-# after_request = ["crm.utils.after_request"]
-
-# Job Events
-# ----------
-# before_job = ["crm.utils.before_job"]
-# after_job = ["crm.utils.after_job"]
-
-# User Data Protection
-# --------------------
-
-# user_data_fields = [
-#	{
-#		"doctype": "{doctype_1}",
-#		"filter_by": "{filter_by}",
-#		"redact_fields": ["{field_1}", "{field_2}"],
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_2}",
-#		"filter_by": "{filter_by}",
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_3}",
-#		"strict": False,
-#	},
-#	{
-#		"doctype": "{doctype_4}"
-#	}
-# ]
-
-# Authentication and authorization
-# --------------------------------
-
-# auth_hooks = [
-#	"crm.auth.validate"
-# ]
+global_search_doctypes = {
+	"Default": [
+		{"doctype": "Lead", "index": 0},
+		{"doctype": "Opportunity", "index": 1},
+	]
+}
