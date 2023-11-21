@@ -40,6 +40,8 @@ scheduler_events = {
 	]
 }
 
+treeviews = ["Territory", "Sales Person"]
+
 default_mail_footer = ""
 
 email_append_to = ["Lead", "Opportunity"]
