@@ -10,6 +10,8 @@ app_license = "GNU General Public License (v3)"
 app_include_js = "crm.bundle.js"
 app_include_css = "crm.bundle.css"
 
+after_install = "crm.setup.install.after_install"
+
 doctype_js = {
 	"Communication": "overrides/communication_hooks.js",
 	"Event": "overrides/event_hooks.js",
