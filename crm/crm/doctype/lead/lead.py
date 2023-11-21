@@ -3,27 +3,16 @@
 
 import frappe
 from frappe import _
-from frappe.utils import validate_email_address, cint, comma_and, has_gravatar, clean_whitespace
+from frappe.utils import validate_email_address, cint, cstr, comma_and, has_gravatar, clean_whitespace
 from frappe.model.mapper import get_mapped_doc
-
-from erpnext.controllers.selling_controller import SellingController
+from frappe.model.document import Document
 from frappe.contacts.address_and_contact import load_address_and_contact
-from erpnext.accounts.party import set_taxes
 from frappe.email.inbox import link_communication_to_document
 
 sender_field = "email_id"
 
 
-class Lead(SellingController):
-	def __init__(self, *args, **kwargs):
-		super(Lead, self).__init__(*args, **kwargs)
-		self.status_map = [
-			["Lost Quotation", "has_lost_quotation"],
-			["Opportunity", "has_opportunity"],
-			["Quotation", "has_quotation"],
-			["Converted", "eval:self.customer"],
-		]
-
+class Lead(Document):
 	def get_feed(self):
 		return '{0}: {1}'.format(_(self.status), self.lead_name)
 
@@ -32,97 +21,12 @@ class Lead(SellingController):
 
 	def validate(self):
 		self.validate_lead_name()
-
 		self.validate_organization_lead()
-		self.validate_tax_id()
+		self.validate_email_address()
 		self.validate_mobile_no()
-
-		self.set_status()
+		self.validate_tax_id()
 		self.check_email_id_is_unique()
-
-		if self.email_id:
-			if not self.flags.ignore_email_validation:
-				validate_email_address(self.email_id, True)
-
-			if self.is_new() or not self.image:
-				self.image = has_gravatar(self.email_id)
-
-	def check_email_id_is_unique(self):
-		if self.email_id:
-			# validate email is unique
-			duplicate_leads = frappe.db.sql_list("""select name from tabLead
-				where email_id=%s and name!=%s""", (self.email_id, self.name))
-
-			if duplicate_leads:
-				frappe.throw(_("Email Address must be unique, already exists for {0}")
-					.format(comma_and(duplicate_leads)), frappe.DuplicateEntryError)
-
-	def on_trash(self):
-		frappe.db.sql("update `tabIssue` set lead = '' where lead = %s", self.name)
-		self.delete_events()
-
-	def validate_tax_id(self):
-		from erpnext.accounts.party import validate_ntn_cnic_strn
-		validate_ntn_cnic_strn(self.get('tax_id'), self.get('tax_cnic'), self.get('tax_strn'))
-
-	def validate_mobile_no(self):
-		from erpnext.accounts.party import validate_mobile_pakistan
-
-		if self.get('mobile_no_2') and not self.get('mobile_no'):
-			self.mobile_no = self.mobile_no_2
-			self.mobile_no_2 = ""
-
-		validate_mobile_pakistan(self.get('mobile_no'))
-		validate_mobile_pakistan(self.get('mobile_no_2'))
-
-	def validate_organization_lead(self):
-		if cint(self.organization_lead):
-			self.lead_name = self.company_name
-			self.gender = None
-			self.salutation = None
-
-	def update_customer_reference(self, customer, update_modified=True):
-		self.db_set('customer', customer)
-
-		status = 'Converted' if customer else 'Interested'
-		self.set_status(status=status, update=True, update_modified=update_modified)
-
-	def has_opportunity(self):
-		return frappe.db.get_value("Opportunity", {"party_name": self.name, "status": ["!=", "Lost"]})
-
-	def has_quotation(self):
-		quotation = frappe.db.get_value("Quotation", {
-			"quotation_to": "Lead",
-			"party_name": self.name,
-			"docstatus": 1,
-			"status": ["!=", "Lost"]
-		})
-
-		vehicle_quotation = frappe.db.get_value("Vehicle Quotation", {
-			"quotation_to": "Lead",
-			"party_name": self.name,
-			"docstatus": 1,
-			"status": ["!=", "Lost"]
-		})
-
-		return quotation or vehicle_quotation
-
-	def has_lost_quotation(self):
-		quotation = frappe.db.get_value("Quotation", {
-			"quotation_to": "Lead",
-			"party_name": self.name,
-			"docstatus": 1,
-			"status": "Lost"
-		})
-
-		vehicle_quotation = frappe.db.get_value("Vehicle Quotation", {
-			"quotation_to": "Lead",
-			"party_name": self.name,
-			"docstatus": 1,
-			"status": "Lost"
-		})
-
-		return quotation or vehicle_quotation
+		self.set_gravatar()
 
 	def validate_lead_name(self):
 		self.lead_name = clean_whitespace(self.lead_name)
@@ -135,60 +39,49 @@ class Lead(SellingController):
 
 			self.lead_name = self.company_name
 
+	def validate_organization_lead(self):
+		if cint(self.organization_lead):
+			self.lead_name = self.company_name
+			self.gender = None
+			self.salutation = None
 
-@frappe.whitelist()
-def make_customer(source_name, target_doc=None):
-	return _make_customer(source_name, target_doc)
+	def validate_email_address(self):
+		self.email_id = cstr(self.email_id).strip()
+		if self.email_id:
+			if not self.flags.ignore_email_validation:
+				validate_email_address(self.email_id, True)
 
+	def validate_mobile_no(self):
+		from frappe.regional.pakistan import validate_mobile_pakistan
 
-def _make_customer(source_name, target_doc=None, ignore_permissions=False):
-	def set_missing_values(source, target):
-		if source.company_name:
-			target.customer_type = "Company"
-			target.customer_name = source.company_name
-		else:
-			target.customer_type = "Individual"
-			target.customer_name = source.lead_name
+		if self.get('mobile_no_2') and not self.get('mobile_no'):
+			self.mobile_no = self.mobile_no_2
+			self.mobile_no_2 = ""
 
-		target.customer_group = frappe.db.get_default("Customer Group")
+		validate_mobile_pakistan(self.get('mobile_no'))
+		validate_mobile_pakistan(self.get('mobile_no_2'))
 
-	doclist = get_mapped_doc("Lead", source_name, {
-		"Lead": {
-			"doctype": "Customer",
-			"field_map": {
-				"name": "lead_name",
-				"lead_name": "contact_first_name",
-			}
-		}
-	}, target_doc, set_missing_values, ignore_permissions=ignore_permissions)
+	def validate_tax_id(self):
+		from frappe.regional.pakistan import validate_ntn_cnic_strn
+		validate_ntn_cnic_strn(self.get('tax_id'), self.get('tax_cnic'), self.get('tax_strn'))
 
-	return doclist
+	def check_email_id_is_unique(self):
+		if self.email_id:
+			# validate email is unique
+			duplicate_leads = frappe.db.sql_list("""
+				select name
+				from `tabLead`
+				where email_id = %s and name != %s
+			""", (self.email_id, self.name))
 
+			if duplicate_leads:
+				frappe.throw(_("Email Address must be unique, Lead already exists for {0}")
+					.format(comma_and(duplicate_leads)), frappe.DuplicateEntryError)
 
-def get_customer_from_lead(lead, throw=False):
-	if not lead:
-		return None
-
-	customer = frappe.db.get_value("Lead", lead, "customer")
-	if not customer and throw:
-		frappe.throw(_("Please convert Lead to Customer first"))
-
-	return customer
-
-
-@frappe.whitelist()
-def set_customer_for_lead(lead, customer):
-	lead_doc = frappe.get_doc("Lead", lead)
-
-	lead_doc.update_customer_reference(customer)
-	lead_doc.notify_update()
-
-	if customer:
-		frappe.msgprint(_("{0} converted to {1}")
-			.format(frappe.get_desk_link("Lead", lead), frappe.get_desk_link("Customer", customer)),
-			indicator="green")
-	else:
-		frappe.msgprint(_("{0} unlinked with Customer").format(frappe.get_desk_link("Lead", lead)))
+	def set_gravatar(self):
+		if self.email_id:
+			if self.is_new() or not self.image:
+				self.image = has_gravatar(self.email_id)
 
 
 @frappe.whitelist()
@@ -207,55 +100,6 @@ def make_opportunity(source_name, target_doc=None):
 	}, target_doc, set_missing_values)
 
 	return target_doc
-
-
-@frappe.whitelist()
-def make_quotation(source_name, target_doc=None):
-	def set_missing_values(source, target):
-		add_sales_person_from_source(source, target)
-		target.run_method("set_missing_values")
-		target.run_method("reset_taxes_and_charges")
-		target.run_method("calculate_taxes_and_totals")
-
-	target_doc = get_mapped_doc("Lead", source_name, {
-		"Lead": {
-			"doctype": "Quotation",
-			"field_map": {
-				"name": "party_name",
-				"doctype": "quotation_to",
-			}
-		}
-	}, target_doc, set_missing_values)
-
-	return target_doc
-
-
-@frappe.whitelist()
-def make_vehicle_quotation(source_name, target_doc=None):
-	def set_missing_values(source, target):
-		add_sales_person_from_source(source, target)
-		target.run_method("set_missing_values")
-		target.run_method("calculate_taxes_and_totals")
-
-	target_doc = get_mapped_doc("Lead", source_name, {
-		"Lead": {
-			"doctype": "Vehicle Quotation",
-			"field_map": {
-				"name": "party_name",
-				"doctype": "quotation_to",
-			}
-		}
-	}, target_doc, set_missing_values)
-
-	return target_doc
-
-
-def add_sales_person_from_source(source, target):
-	if target.meta.has_field('sales_team') and source.get('sales_person') and not target.get('sales_team'):
-		target.append('sales_team', {
-			'sales_person': source.sales_person,
-			'allocated_percentage': 100,
-		})
 
 
 @frappe.whitelist()
