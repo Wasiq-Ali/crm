@@ -84,10 +84,21 @@ industry_types = [
 ]
 
 
-def get_default_records():
+def get_default_records(country):
 	return {
 		"Lead Source": [{"doctype": "Lead Source", "source_name": _(d)} for d in lead_sources],
 		"Market Segment": [{"doctype": "Market Segment", "market_segment": _(d)} for d in market_segments],
 		"Sales Stage": [{"doctype": "Sales Stage", "stage_name": _(d)} for d in sales_stages],
 		"Industry Type": [{"doctype": "Industry Type", "industry": _(d)} for d in industry_types],
+		"Sales Person": [
+			{'doctype': 'Sales Person', 'sales_person_name': _('Sales Team'), 'is_group': 1, "parent_sales_person": ""}
+		],
+		"Territory": [
+			{'doctype': 'Territory', 'territory_name': _('All Territories'), 'is_group': 1,
+				'name': _('All Territories'), 'parent_territory': ''},
+			{'doctype': 'Territory', 'territory_name': country.replace("'", ""), 'is_group': 0,
+				'parent_territory': _('All Territories')},
+			{'doctype': 'Territory', 'territory_name': _("Rest Of The World"), 'is_group': 0,
+				'parent_territory': _('All Territories')},
+		]
 	}

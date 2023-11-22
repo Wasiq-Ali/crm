@@ -11,6 +11,7 @@ app_include_js = "crm.bundle.js"
 app_include_css = "crm.bundle.css"
 
 after_install = "crm.setup.install.after_install"
+setup_wizard_stages = "crm.setup.setup_wizard.get_setup_stages"
 
 doctype_js = {
 	"Communication": "overrides/communication_hooks.js",
