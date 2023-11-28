@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "autoname": "format:MAIL-CAMP-{YYYY}-{#####}",
  "creation": "2019-06-30 16:05:30.015615",
  "doctype": "DocType",
@@ -70,7 +71,8 @@
    "options": "User"
   }
  ],
- "modified": "2020-03-03 15:34:44.885224",
+ "links": [],
+ "modified": "2023-11-28 21:35:18.298289",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Email Campaign",
@@ -92,5 +94,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

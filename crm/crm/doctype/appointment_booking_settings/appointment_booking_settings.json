@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "creation": "2019-08-27 10:56:48.309824",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -65,7 +66,8 @@
   }
  ],
  "issingle": 1,
- "modified": "2022-08-14 15:29:51.244828",
+ "links": [],
+ "modified": "2023-11-28 21:35:16.906955",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Booking Settings",
@@ -111,5 +113,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

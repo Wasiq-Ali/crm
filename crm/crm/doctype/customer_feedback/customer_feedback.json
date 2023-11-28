@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "autoname": "naming_series:",
  "creation": "2023-01-24 12:52:53.011595",
  "doctype": "DocType",
@@ -201,7 +202,8 @@
    "label": "Contact Remarks"
   }
  ],
- "modified": "2023-02-02 17:48:15.868871",
+ "links": [],
+ "modified": "2023-11-28 21:35:15.640053",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",
@@ -241,6 +243,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "title",
  "track_changes": 1,
  "track_seen": 1
