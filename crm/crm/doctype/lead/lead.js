@@ -33,12 +33,12 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 	}
 
 	validate() {
-		erpnext.utils.format_ntn(this.frm, "tax_id");
-		erpnext.utils.format_cnic(this.frm, "tax_cnic");
-		erpnext.utils.format_strn(this.frm, "tax_strn");
+		frappe.regional.pakistan.format_ntn(this.frm, "tax_id");
+		frappe.regional.pakistan.format_cnic(this.frm, "tax_cnic");
+		frappe.regional.pakistan.format_strn(this.frm, "tax_strn");
 
-		erpnext.utils.format_mobile_pakistan(this.frm, "mobile_no");
-		erpnext.utils.format_mobile_pakistan(this.frm, "mobile_no_2");
+		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no");
+		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no_2");
 	}
 
 	set_dynamic_link() {
@@ -116,23 +116,23 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 	}
 
 	tax_id() {
-		erpnext.utils.format_ntn(this.frm, "tax_id");
+		frappe.regional.pakistan.format_ntn(this.frm, "tax_id");
 		erpnext.utils.validate_duplicate_tax_id(this.frm.doc, "tax_id");
 	}
 	tax_cnic() {
-		erpnext.utils.format_cnic(this.frm, "tax_cnic");
+		frappe.regional.pakistan.format_cnic(this.frm, "tax_cnic");
 		erpnext.utils.validate_duplicate_tax_id(this.frm.doc, "tax_cnic");
 	}
 	tax_strn() {
-		erpnext.utils.format_strn(this.frm, "tax_strn");
+		frappe.regional.pakistan.format_strn(this.frm, "tax_strn");
 		erpnext.utils.validate_duplicate_tax_id(this.frm.doc, "tax_strn");
 	}
 
 	mobile_no() {
-		erpnext.utils.format_mobile_pakistan(this.frm, "mobile_no");
+		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no");
 	}
 	mobile_no_2() {
-		erpnext.utils.format_mobile_pakistan(this.frm, "mobile_no_2");
+		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no_2");
 	}
 };
 
