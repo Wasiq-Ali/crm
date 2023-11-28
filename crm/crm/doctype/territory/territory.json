@@ -17,9 +17,7 @@
   "territory_manager",
   "lft",
   "rgt",
-  "old_parent",
-  "target_details_section_break",
-  "targets"
+  "old_parent"
  ],
  "fields": [
   {
@@ -103,27 +101,13 @@
    "options": "Territory",
    "print_hide": 1,
    "report_hide": 1
-  },
-  {
-   "description": "Set Item Group-wise budgets on this Territory. You can also include seasonality by setting the Distribution.",
-   "fieldname": "target_details_section_break",
-   "fieldtype": "Section Break",
-   "label": "Territory Targets",
-   "oldfieldtype": "Section Break"
-  },
-  {
-   "fieldname": "targets",
-   "fieldtype": "Table",
-   "label": "Targets",
-   "oldfieldname": "target_details",
-   "oldfieldtype": "Table",
-   "options": "Target Detail"
   }
  ],
  "icon": "fa fa-map-marker",
  "idx": 1,
  "is_tree": 1,
- "modified": "2023-03-14 14:13:39.132020",
+ "links": [],
+ "modified": "2023-11-28 21:29:21.019148",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Territory",
@@ -173,10 +157,6 @@
   {
    "read": 1,
    "role": "Stock User"
-  },
-  {
-   "read": 1,
-   "role": "Maintenance User"
   }
  ],
  "search_fields": "parent_territory,territory_manager",
