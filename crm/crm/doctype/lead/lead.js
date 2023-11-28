@@ -1,9 +1,9 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // License: GNU General Public License v3. See license.txt
 
-frappe.provide("erpnext.crm");
+frappe.provide("crm");
 
-erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Controller {
+crm.LeadController = class LeadController extends frappe.ui.form.Controller {
 	setup() {
 		this.frm.custom_make_buttons = {
 			'Customer': 'Customer',
@@ -16,9 +16,6 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 	}
 
 	refresh() {
-		erpnext.toggle_naming_series();
-		erpnext.hide_company();
-
 		this.set_dynamic_link();
 		this.set_sales_person_from_user();
 		this.setup_buttons();
@@ -59,47 +56,14 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 
 	setup_buttons() {
 		if (!this.frm.doc.__islocal) {
-			if (!this.frm.doc.customer) {
-				this.frm.add_custom_button(__("Customer"), () => this.make_or_set_customer(),
-					__('Create'));
-				this.frm.add_custom_button(__("Opportunity"), () => this.create_opportunity(),
-					__('Create'));
-
-				if (frappe.boot.active_domains.includes("Vehicles")) {
-					this.frm.add_custom_button(__("Vehicle Quotation"), () => this.make_vehicle_quotation(),
-						__('Create'));
-				}
-
-				this.frm.add_custom_button(__("Quotation"), () => this.make_quotation(),
-					__('Create'));
-			} else {
-				this.frm.add_custom_button(__("Customer"), () => this.make_or_set_customer(),
-					__("Change"));
-			}
+			this.frm.add_custom_button(__("Opportunity"), () => this.make_opportunity(),
+				__('Create'));
 		}
 	}
 
-	make_or_set_customer() {
-		erpnext.utils.make_customer_from_lead(this.frm, this.frm.doc.name);
-	}
-
-	create_opportunity() {
+	make_opportunity() {
 		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.lead.lead.make_opportunity",
-			frm: this.frm
-		})
-	}
-
-	make_quotation() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.lead.lead.make_quotation",
-			frm: this.frm
-		})
-	}
-
-	make_vehicle_quotation() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.lead.lead.make_vehicle_quotation",
+			method: "crm.crm.doctype.lead.lead.make_opportunity",
 			frm: this.frm
 		})
 	}
@@ -136,4 +100,4 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 	}
 };
 
-extend_cscript(cur_frm.cscript, new erpnext.crm.LeadController({ frm: cur_frm }));
+extend_cscript(cur_frm.cscript, new crm.LeadController({ frm: cur_frm }));

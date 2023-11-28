@@ -5,14 +5,22 @@ import frappe
 from frappe import _
 from frappe.utils import validate_email_address, cint, cstr, comma_and, has_gravatar, clean_whitespace
 from frappe.model.mapper import get_mapped_doc
-from frappe.model.document import Document
+from frappe.utils.status_updater import StatusUpdater
 from frappe.contacts.address_and_contact import load_address_and_contact
 from frappe.email.inbox import link_communication_to_document
 
 sender_field = "email_id"
 
 
-class Lead(Document):
+class Lead(StatusUpdater):
+	def __init__(self, *args, **kwargs):
+		super(Lead, self).__init__(*args, **kwargs)
+		self.status_map = [
+			["Lost Opportunity", "is_lost_opportunity"],
+			["Opportunity", "is_opportunity"],
+			["Converted", "is_converted"],
+		]
+
 	def get_feed(self):
 		return '{0}: {1}'.format(_(self.status), self.lead_name)
 
@@ -27,6 +35,7 @@ class Lead(Document):
 		self.validate_tax_id()
 		self.check_email_id_is_unique()
 		self.set_gravatar()
+		self.set_status()
 
 	def validate_lead_name(self):
 		self.lead_name = clean_whitespace(self.lead_name)
@@ -82,6 +91,30 @@ class Lead(Document):
 		if self.email_id:
 			if self.is_new() or not self.image:
 				self.image = has_gravatar(self.email_id)
+
+	def is_opportunity(self):
+		return self.has_opportunity()
+
+	def has_opportunity(self):
+		return frappe.db.get_value("Opportunity", {
+			"opportunity_from": "Lead", "party_name": self.name, "status": ["!=", "Lost"]
+		})
+
+	def is_lost_opportunity(self):
+		return self.has_lost_opportunity()
+
+	def has_lost_opportunity(self):
+		return frappe.db.get_value("Opportunity", {
+			"opportunity_from": "Lead", "party_name": self.name, "status": ["=", "Lost"]
+		})
+
+	def is_converted(self):
+		return self.has_converted_opportunity()
+
+	def has_converted_opportunity(self):
+		return frappe.db.get_value("Opportunity", {
+			"opportunity_from": "Lead", "party_name": self.name, "status": ["=", "Converted"]
+		})
 
 
 @frappe.whitelist()

@@ -63,7 +63,6 @@
   "column_break3",
   "campaign",
   "column_break_46",
-  "company",
   "unsubscribed"
  ],
  "fields": [
@@ -135,7 +134,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "Lead\nOpen\nReplied\nOpportunity\nQuotation\nLost Quotation\nInterested\nConverted\nDo Not Contact",
+   "options": "Lead\nOpen\nReplied\nInterested\nOpportunity\nLost Opportunity\nConverted\nNot Interested",
    "reqd": 1,
    "search_index": 1
   },
@@ -174,6 +173,7 @@
   },
   {
    "collapsible": 1,
+   "collapsible_depends_on": "notes",
    "fieldname": "notes_section",
    "fieldtype": "Section Break",
    "label": "Notes"
@@ -246,7 +246,6 @@
    "print_hide": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "more_info",
    "fieldtype": "Section Break",
    "label": "More Information",
@@ -274,15 +273,6 @@
    "fieldtype": "Column Break",
    "oldfieldtype": "Column Break",
    "width": "50%"
-  },
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "oldfieldname": "company",
-   "oldfieldtype": "Link",
-   "options": "Company",
-   "remember_last_selected_value": 1
   },
   {
    "default": "0",
@@ -432,7 +422,7 @@
  "idx": 5,
  "image_field": "image",
  "links": [],
- "modified": "2023-11-19 17:34:48.010074",
+ "modified": "2023-11-29 00:11:56.219017",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Lead",
