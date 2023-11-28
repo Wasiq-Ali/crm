@@ -1,22 +1,15 @@
 from frappe import _
 
+
 def get_data():
 	return {
 		'heatmap': True,
-		'heatmap_message': _('This is based on transactions against this Sales Person. See timeline below for details'),
+		'heatmap_message': _('This is based on transactions against this Sales Person.'),
 		'fieldname': 'sales_person',
 		'transactions': [
 			{
-				'label': _('Sales'),
-				'items': ['Sales Order', 'Delivery Note', 'Sales Invoice']
-			},
-			{
-				'label': _('Reference'),
-				'items': ['Customer']
-			},
-			{
-				'label': _('Vehicle Booking'),
-				'items': ['Vehicle Booking Order']
+				'label': _('CRM'),
+				'items': ['Lead', 'Opportunity']
 			},
 		]
 	}

@@ -50,7 +50,7 @@ erpnext.crm.LeadController = class LeadController extends frappe.ui.form.Control
 			return;
 		}
 
-		erpnext.utils.get_sales_person_from_user(sales_person => {
+		crm.utils.get_sales_person_from_user(sales_person => {
 			if (sales_person) {
 				this.frm.set_value('sales_person', sales_person);
 			}

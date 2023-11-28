@@ -10,29 +10,21 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "name_and_employee_id",
   "sales_person_name",
   "parent_sales_person",
-  "sales_commission_category",
   "is_group",
   "enabled",
   "cb0",
-  "employee",
-  "employee_name",
-  "department",
-  "target_details_section_break",
-  "targets",
+  "more_information_section",
+  "contact_email",
+  "contact_mobile",
+  "column_break_qsdfn",
+  "user_id",
   "lft",
   "rgt",
   "old_parent"
  ],
  "fields": [
-  {
-   "fieldname": "name_and_employee_id",
-   "fieldtype": "Section Break",
-   "label": "Name and Employee ID",
-   "options": "icon-user"
-  },
   {
    "fieldname": "sales_person_name",
    "fieldtype": "Data",
@@ -74,22 +66,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "employee",
-   "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Employee",
-   "options": "Employee"
-  },
-  {
-   "fetch_from": "employee.department",
-   "fieldname": "department",
-   "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Department",
-   "options": "Department",
-   "read_only": 1
-  },
-  {
    "fieldname": "lft",
    "fieldtype": "Int",
    "hidden": 1,
@@ -122,43 +98,39 @@
    "print_hide": 1
   },
   {
-   "description": "Set targets Item Group-wise for this Sales Person.",
-   "fieldname": "target_details_section_break",
+   "fieldname": "more_information_section",
    "fieldtype": "Section Break",
-   "label": "Sales Person Targets",
-   "oldfieldtype": "Section Break",
-   "options": "icon-bullseye"
+   "label": "More Information"
   },
   {
-   "fieldname": "targets",
-   "fieldtype": "Table",
-   "label": "Targets",
-   "oldfieldname": "target_details",
-   "oldfieldtype": "Table",
-   "options": "Target Detail"
-  },
-  {
-   "depends_on": "eval:doc.employee && doc.employee_name != doc.employee",
-   "fetch_from": "employee.employee_name",
-   "fieldname": "employee_name",
+   "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Employee Name",
-   "read_only": 1
+   "label": "Email Address",
+   "options": "Email"
   },
   {
-   "fieldname": "sales_commission_category",
+   "fieldname": "contact_mobile",
+   "fieldtype": "Data",
+   "label": "Mobile No"
+  },
+  {
+   "fieldname": "column_break_qsdfn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_id",
    "fieldtype": "Link",
-   "label": "Sales Commission Category",
-   "options": "Sales Commission Category",
-   "permlevel": 1,
-   "print_hide": 1
+   "ignore_user_permissions": 1,
+   "label": "User ID",
+   "options": "User",
+   "unique": 1
   }
  ],
  "icon": "icon-user",
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-10-20 13:27:40.304385",
+ "modified": "2023-11-28 18:06:25.952875",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Sales Person",
