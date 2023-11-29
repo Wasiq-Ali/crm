@@ -65,7 +65,9 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 				}
 			}
 
-			this.frm.page.set_inner_btn_group_as_primary(__("Create"));
+			if (this.frm.page.get_inner_group_button(__("Create")).length) {
+				this.frm.page.set_inner_btn_group_as_primary(__("Create"));
+			}
 		}
 	}
 
