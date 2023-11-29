@@ -230,7 +230,7 @@
    "collapsible": 1,
    "fieldname": "contact_info",
    "fieldtype": "Section Break",
-   "label": "Contact And Address",
+   "label": "Contact and Address",
    "options": "fa fa-bullhorn"
   },
   {
@@ -286,7 +286,6 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
    "fieldname": "more_info",
    "fieldtype": "Section Break",
    "label": "More Information",
@@ -557,7 +556,7 @@
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2023-11-28 21:35:14.472455",
+ "modified": "2023-11-29 14:33:03.357619",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",

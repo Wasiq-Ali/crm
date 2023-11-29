@@ -39,21 +39,11 @@ frappe.ui.form.on("Communication", {
 	},
 
 	make_opportunity_from_communication: (frm) => {
-		const fields = [{
-			fieldtype: 'Link',
-			label: __('Select a Company'),
-			fieldname: 'company',
-			options: 'Company',
-			reqd: 1,
-			default: frappe.defaults.get_user_default("Company")
-		}];
-
-		frappe.prompt(fields, data => {
+		frappe.confirm(__("Create an Opportunity from Communcation?"), () => {
 			frappe.call({
 				method: "crm.crm.doctype.opportunity.opportunity.make_opportunity_from_communication",
 				args: {
 					communication: frm.doc.name,
-					company: data.company
 				},
 				freeze: true,
 				callback: (r) => {
@@ -67,8 +57,6 @@ frappe.ui.form.on("Communication", {
 					}
 				}
 			});
-		},
-		'Create an Opportunity',
-		'Create');
+		});
 	}
 });

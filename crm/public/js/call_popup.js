@@ -154,7 +154,7 @@ class CallPopup {
 	}
 
 	make_last_interaction_section() {
-		frappe.xcall('crm.crm.doctype.utils.get_last_interaction', {
+		frappe.xcall('crm.crm.utils.get_last_interaction', {
 			'contact': this.call_log.contact,
 			'lead': this.call_log.lead
 		}).then(data => {

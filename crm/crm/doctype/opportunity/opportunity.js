@@ -1,33 +1,20 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // License: GNU General Public License v3. See license.txt
 
-{% include 'erpnext/selling/sales_common.js' %}
-{% include 'erpnext/selling/quotation_common.js' %}
+frappe.provide("crm");
 
-frappe.provide("erpnext.crm");
-
-erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
+crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	setup() {
 		this.frm.custom_make_buttons = {
-			'Customer': 'Customer',
-			'Quotation': 'Quotation',
-			'Appointment': 'Appointment',
-			'Vehicle Quotation': 'Vehicle Quotation',
-			'Vehicle Booking Order': 'Vehicle Booking Order',
-			'Vehicle Gate Pass': 'Test Drive Gate Pass',
-			'Supplier Quotation': 'Supplier Quotation',
+			"Appointment": "Appointment",
 		};
 
-		erpnext.setup_applies_to_fields(this.frm);
-
-		this.frm.email_field = 'contact_email';
+		this.frm.email_field = "contact_email";
 		this.setup_queries();
 	}
 
 	refresh() {
-		erpnext.hide_company();
-		erpnext.toggle_naming_series();
-
+		this.set_opportunity_from()
 		this.set_dynamic_link();
 		this.update_dynamic_fields();
 		this.set_sales_person_from_user();
@@ -35,92 +22,60 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		this.setup_dashboard();
 	}
 
-	onload_post_render() {
-		this.frm.get_field("items").grid.set_multiple_add("item_code", "qty");
-	}
-
 	setup_buttons() {
-		var me = this;
-		me.setup_notification_buttons();
+		this.setup_notification_buttons();
 
-		if (!me.frm.doc.__islocal) {
-			if(me.frm.perm[0].write) {
-				me.frm.add_custom_button(__('Schedule Follow Up'), () => me.schedule_follow_up(),
+		if (!this.frm.doc.__islocal) {
+			if (this.frm.perm[0].write) {
+				this.frm.add_custom_button(__("Schedule Follow Up"), () => this.schedule_follow_up(),
 					__("Communication"));
 
-				me.frm.add_custom_button(__('Submit Communication'), () => me.submit_communication(),
+				this.frm.add_custom_button(__("Submit Communication"), () => this.submit_communication(),
 					__("Communication"));
 
-				if (!["Lost", "Closed", "Converted"].includes(me.frm.doc.status)) {
-					me.frm.add_custom_button(__("Lost"), () => {
-						me.frm.events.set_as_lost_dialog(me.frm);
+				if (!["Lost", "Closed", "Converted"].includes(this.frm.doc.status)) {
+					this.frm.add_custom_button(__("Lost"), () => {
+						this.frm.events.set_as_lost_dialog(this.frm);
 					}, __("Status"));
 
-					me.frm.add_custom_button(__("Close"), () => {
-						me.frm.set_value("status", "Closed");
-						me.frm.save();
+					this.frm.add_custom_button(__("Close"), () => {
+						this.frm.set_value("status", "Closed");
+						this.frm.save();
 					}, __("Status"));
 				}
 
-				if (["Lost", "Closed"].includes(me.frm.doc.status)) {
-					me.frm.add_custom_button(__("Reopen"), () => {
-						if (me.frm.doc.status == "Lost") {
-							me.frm.events.update_lost_status(me.frm, false);
+				if (["Lost", "Closed"].includes(this.frm.doc.status)) {
+					this.frm.add_custom_button(__("Reopen"), () => {
+						if (this.frm.doc.status == "Lost") {
+							this.frm.events.update_lost_status(this.frm, false);
 						} else {
-							me.frm.set_value("lost_reasons", [])
-							me.frm.set_value("order_lost_reason", null)
-							me.frm.set_value("status", "Open");
-							me.frm.save();
+							this.frm.set_value("lost_reasons", [])
+							this.frm.set_value("order_lost_reason", null)
+							this.frm.set_value("status", "Open");
+							this.frm.save();
 						}
 					}, __("Status"));
 				}
 			}
 
-			if(me.frm.doc.status !== "Lost") {
-				if (!me.frm.doc.__onload.customer) {
-					me.frm.add_custom_button(__('Customer'), () => me.create_customer(),
-						__('Create'));
+			if (this.frm.doc.status !== "Lost") {
+				if (!this.frm.doc.conversion_document || this.frm.doc.conversion_document == "Appointment") {
+					this.frm.add_custom_button(__('Appointment'), () => this.create_appointment(),
+						__("Create"));
 				}
-
-				if (
-					frappe.boot.active_domains.includes("Vehicles")
-					&& (!me.frm.doc.conversion_document || me.frm.doc.conversion_document == "Order")
-				) {
-					me.frm.add_custom_button(__("Vehicle Booking Order"), () => me.make_vehicle_booking_order(),
-						__('Create'));
-
-					me.frm.add_custom_button(__("Vehicle Quotation"), () => me.make_vehicle_quotation(),
-						__('Create'));
-
-					me.frm.add_custom_button(__("Test Drive Gate Pass"), () => me.make_opportunity_gate_pass(),
-						__('Create'));
-				}
-
-				me.frm.add_custom_button(__('Quotation'), () => me.create_quotation(),
-					__('Create'));
-
-				if (!me.frm.doc.conversion_document || me.frm.doc.conversion_document == "Appointment") {
-					me.frm.add_custom_button(__('Appointment'), () => me.create_appointment(),
-						__('Create'));
-				}
-
-				if (me.frm.doc.items && me.frm.doc.items.length) {
-					me.frm.add_custom_button(__('Supplier Quotation'), () => me.make_supplier_quotation(),
-						__('Create'));
-				}
-
-				me.frm.page.set_inner_btn_group_as_primary(__("Create"));
 			}
+
+			this.frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
 	}
 
 	setup_notification_buttons() {
-		if(this.frm.is_new()) {
+		if (this.frm.is_new()) {
 			return
 		}
 
 		if (this.can_notify("Opportunity Greeting")) {
-			var confirmation_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
+			let confirmation_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
 			let label = __("Opportunity Greeting{0}", [confirmation_count ? " (Resend)" : ""]);
 			this.frm.add_custom_button(label, () => this.send_sms('Opportunity Greeting'),
 				__("Notify"));
@@ -130,45 +85,31 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			__("Notify"));
 	}
 
-
 	setup_queries() {
-		var me = this;
+		let me = this;
 
-		me.frm.set_query("opportunity_from", function() {
+		me.frm.set_query("opportunity_from", () => {
 			return {
 				"filters": {
-					"name": ["in", ["Customer", "Lead"]],
+					"name": ["in", this.get_allowed_party_types()],
 				}
 			}
 		});
 
-		me.frm.set_query('party_name', function() {
-			if (me.frm.doc.appointment_for === "Customer") {
-				return erpnext.queries.customer();
-			} else if (me.frm.doc.appointment_for === "Lead") {
-				return erpnext.queries.lead();
-			}
-		});
+		me.frm.set_query('customer_address', frappe.contacts.address_query);
+		me.frm.set_query('contact_person', frappe.contacts.contact_query);
+	}
 
-		me.frm.set_query('customer_address', erpnext.queries.address_query);
-		me.frm.set_query('contact_person', erpnext.queries.contact_query);
-
-		me.frm.set_query("item_code", "items", function() {
-			return {
-				query: "erpnext.controllers.queries.item_query",
-				filters: {'is_sales_item': 1}
-			};
-		});
-
-		if (me.frm.fields_dict.delivery_period) {
-			me.frm.set_query("delivery_period", function () {
-				if (me.frm.doc.transaction_date) {
-					return {
-						filters: {to_date: [">=", me.frm.doc.transaction_date]}
-					}
-				}
-			});
+	set_opportunity_from() {
+		let allowed_party_types = this.get_allowed_party_types();
+		if (allowed_party_types.length == 1 && !this.frm.doc.opportunity_from) {
+			this.frm.set_value("opportunity_from", allowed_party_types[0]);
+			this.frm.set_df_property("opportunity_from", "hidden", 1);
 		}
+	}
+
+	get_allowed_party_types() {
+		return ["Lead"]
 	}
 
 	setup_dashboard() {
@@ -178,16 +119,16 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 
 		this.frm.dashboard.stats_area_row.empty();
 
-		var reminder_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
-		var reminder_status = reminder_count ? __("{0} SMS", [reminder_count]) : __("Not Sent");
-		var reminder_color = reminder_count ? "green"
+		let reminder_count = frappe.get_notification_count(this.frm, 'Opportunity Greeting', 'SMS');
+		let reminder_status = reminder_count ? __("{0} SMS", [reminder_count]) : __("Not Sent");
+		let reminder_color = reminder_count ? "green"
 			: this.can_notify('Opportunity Greeting') ? "yellow" : "grey";
 
 		this.frm.dashboard.add_indicator(__('Opportunity Greeting: {0}', [reminder_status]), reminder_color);
 	}
 
 	update_dynamic_fields() {
-		var me = this;
+		let me = this;
 
 		if (me.frm.doc.opportunity_from) {
 			me.frm.set_df_property("party_name", "label", __(me.frm.doc.opportunity_from));
@@ -198,39 +139,14 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			me.frm.set_df_property("customer_address", "label", __("Address"));
 			me.frm.set_df_property("contact_person", "label", __("Contact Person"));
 		}
-
-		var vehicle_sales_fields = [
-			"vehicle_sb_1",
-			"vehicle_sb_2",
-			"feedback_section",
-			"ratings_section",
-			"previously_owned_section"
-		];
-
-		for (let field of vehicle_sales_fields) {
-			me.frm.toggle_display(field, me.frm.doc.conversion_document == "Order");
-		}
-
-		var vehicle_maintenance_fields = [
-			"due_date",
-			"applies_to_vehicle",
-			"vehicle_license_plate",
-			"vehicle_unregistered",
-			"vehicle_chassis_no",
-			"vehicle_engine_no",
-			"vehicle_last_odometer",
-		]
-
-		$.each(vehicle_maintenance_fields, function (i, f) {
-			if (me.frm.fields_dict[f]) {
-				me.frm.set_df_property(f, "hidden", me.frm.doc.conversion_document == "Order" ? 1 : 0);
-			}
-		});
 	}
 
 	set_dynamic_link() {
-		var doctype = this.frm.doc.opportunity_from == 'Lead' ? 'Lead' : 'Customer';
-		frappe.dynamic_link = {doc: this.frm.doc, fieldname: 'party_name', doctype: doctype}
+		frappe.dynamic_link = {
+			doc: this.frm.doc,
+			fieldname: 'party_name',
+			doctype: this.frm.doc.opportunity_from || "Lead"
+		}
 	}
 
 	set_sales_person_from_user() {
@@ -238,7 +154,7 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 			return;
 		}
 
-		erpnext.utils.get_sales_person_from_user(sales_person => {
+		crm.utils.get_sales_person_from_user(sales_person => {
 			if (sales_person) {
 				this.frm.set_value('sales_person', sales_person);
 			}
@@ -257,11 +173,11 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	contact_person() {
-		return erpnext.utils.get_contact_details(this.frm);
+		return crm.utils.get_contact_details(this.frm, "opportunity_from");
 	}
 
 	customer_address() {
-		erpnext.utils.get_address_display(this.frm, 'customer_address', 'address_display', false);
+		return crm.utils.get_address_display(this.frm, "opportunity_from", "customer_address", "address_display");
 	}
 
 	party_name() {
@@ -269,11 +185,11 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	get_customer_details() {
-		var me = this;
+		let me = this;
 
 		if (me.frm.doc.company && me.frm.doc.opportunity_from && me.frm.doc.party_name) {
 			return frappe.call({
-				method: "erpnext.crm.doctype.opportunity.opportunity.get_customer_details",
+				method: "crm.crm.doctype.opportunity.opportunity.get_customer_details",
 				args: {
 					args: {
 						doctype: me.frm.doc.doctype,
@@ -291,31 +207,11 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		}
 	}
 
-	item_code(doc, cdt, cdn) {
-		var d = frappe.get_doc(cdt, cdn);
-
-		if (d.item_code) {
-			return frappe.call({
-				method: "erpnext.crm.doctype.opportunity.opportunity.get_item_details",
-				args: {
-					"item_code": d.item_code
-				},
-				callback: function(r) {
-					if(r.message) {
-						$.each(r.message, function(k, v) {
-							frappe.model.set_value(cdt, cdn, k, v);
-						});
-					}
-				}
-			});
-		}
-	}
-
 	schedule_follow_up() {
-		var me = this;
+		let me = this;
 		me.frm.check_if_unsaved();
 
-		var dialog = new frappe.ui.Dialog({
+		let dialog = new frappe.ui.Dialog({
 			title: __('Schedule a Follow Up'),
 			doc: {},
 			fields: [
@@ -339,8 +235,8 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 					fieldtype: "Date",
 					reqd: 1,
 					onchange: () => {
-						var today = frappe.datetime.get_today();
-						var schedule_date = dialog.get_value('schedule_date');
+						let today = frappe.datetime.get_today();
+						let schedule_date = dialog.get_value('schedule_date');
 						dialog.doc.follow_up_days = frappe.datetime.get_diff(schedule_date, today);
 						dialog.get_field('follow_up_days').refresh();
 					}
@@ -355,10 +251,10 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 				},
 			],
 			primary_action: function() {
-				var data = dialog.get_values();
+				let data = dialog.get_values();
 
 				frappe.call({
-					method: "erpnext.crm.doctype.opportunity.opportunity.schedule_follow_up",
+					method: "crm.crm.doctype.opportunity.opportunity.schedule_follow_up",
 					args: {
 						name: me.frm.doc.name,
 						schedule_date: data.schedule_date,
@@ -378,12 +274,12 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	submit_communication() {
-		var me = this;
+		let me = this;
 		me.frm.check_if_unsaved();
 
-		var row = this.frm.doc.contact_schedule.find(element => !element.contact_date);
+		let row = this.frm.doc.contact_schedule.find(element => !element.contact_date);
 
-		var d = new frappe.ui.Dialog({
+		let dialog = new frappe.ui.Dialog({
 			title: __('Submit Communication'),
 			fields: [
 				{
@@ -421,10 +317,10 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 				},
 			],
 			primary_action: function() {
-				var data = d.get_values();
+				let data = dialog.get_values();
 
 				frappe.call({
-					method: "erpnext.crm.doctype.opportunity.opportunity.submit_communication",
+					method: "crm.crm.doctype.opportunity.opportunity.submit_communication",
 					args: {
 						opportunity: me.frm.doc.name,
 						contact_date: data.contact_date,
@@ -436,63 +332,16 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 						}
 					}
 				});
-				d.hide();
+				dialog.hide();
 			},
 			primary_action_label: __('Submit')
 		});
-		d.show();
-	}
-
-	create_customer() {
-		erpnext.utils.make_customer_from_lead(this.frm, this.frm.doc.party_name);
-	}
-
-	create_quotation() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_quotation",
-			frm: this.frm
-		});
-	}
-
-	make_vehicle_quotation() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_vehicle_quotation",
-			frm: this.frm
-		});
-	}
-
-	make_opportunity_gate_pass() {
-		return frappe.call ({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_opportunity_gate_pass",
-			args :{
-				"opportunity": this.frm.doc.name,
-			},
-			callback: function (r){
-				if (!r.exc) {
-					var doclist = frappe.model.sync(r.message);
-					frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
-				}
-			}
-		});
-	}
-
-	make_vehicle_booking_order() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_vehicle_booking_order",
-			frm: this.frm
-		});
+		dialog.show();
 	}
 
 	create_appointment() {
 		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_appointment",
-			frm: this.frm
-		});
-	}
-
-	make_supplier_quotation() {
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.opportunity.opportunity.make_supplier_quotation",
+			method: "crm.crm.doctype.opportunity.opportunity.make_appointment",
 			frm: this.frm
 		});
 	}
@@ -515,4 +364,4 @@ erpnext.crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 };
 
-extend_cscript(cur_frm.cscript, new erpnext.crm.Opportunity({frm: cur_frm}));
+extend_cscript(cur_frm.cscript, new crm.Opportunity({frm: cur_frm}));

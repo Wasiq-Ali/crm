@@ -43,6 +43,10 @@ scheduler_events = {
 	]
 }
 
+standard_queries = {
+	"Lead": "crm.queries.lead_query",
+}
+
 treeviews = ["Territory", "Sales Person"]
 
 default_mail_footer = ""

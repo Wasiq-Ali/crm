@@ -1,6 +1,38 @@
 import frappe
-from frappe import _
-import json
+from frappe.utils import cstr
+
+
+@frappe.whitelist()
+def get_address_display(address=None, lead=None):
+	from frappe.contacts.doctype.address.address import get_address_display
+	from crm.crm.doctype.lead.lead import get_lead_address_details
+
+	out = None
+
+	if address:
+		out = get_address_display(address)
+	elif lead:
+		lead_address_details = get_lead_address_details(lead)
+		out = get_address_display(lead_address_details)
+
+	return out
+
+
+@frappe.whitelist()
+def get_contact_details(contact=None, lead=None, get_contact_no_list=False, link_doctype=None, link_name=None):
+	from frappe.contacts.doctype.contact.contact import get_contact_details
+	from crm.crm.doctype.lead.lead import _get_lead_contact_details
+
+	if contact:
+		out = get_contact_details(contact, get_contact_no_list=get_contact_no_list, link_doctype=link_doctype, link_name=link_name)
+	elif lead:
+		if isinstance(lead, str):
+			lead = frappe.get_doc("Lead", lead)
+		out = _get_lead_contact_details(lead)
+	else:
+		out = get_contact_details(None)
+
+	return out
 
 
 @frappe.whitelist()

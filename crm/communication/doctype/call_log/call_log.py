@@ -5,7 +5,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from crm.crm.doctype.utils import get_scheduled_employees_for_popup, strip_number
+from crm.crm.utils import get_scheduled_employees_for_popup, strip_number
 from frappe.contacts.doctype.contact.contact import get_contact_with_phone_number
 from crm.crm.doctype.lead.lead import get_lead_with_phone_number
 
