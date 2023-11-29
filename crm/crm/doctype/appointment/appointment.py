@@ -6,7 +6,7 @@
 import frappe
 import datetime
 from frappe import _
-from erpnext.controllers.status_updater import StatusUpdater
+from erpnext.controllers.status_updater import StatusUpdaterERP
 from frappe.utils import cint, today, getdate, get_time, get_datetime, combine_datetime, date_diff,\
 	format_datetime, formatdate, get_url, now_datetime, add_days, clean_whitespace
 from frappe.utils.verified_command import get_signed_params
@@ -16,7 +16,7 @@ from six import string_types
 from frappe.contacts.doctype.address.address import get_default_address
 from frappe.contacts.doctype.contact.contact import get_default_contact, get_all_contact_nos
 from erpnext.accounts.party import get_contact_details, get_address_display
-from crm.crm.doctype.lead.lead import get_customer_from_lead
+from erpnext.overrides.lead.lead_hooks import get_customer_from_lead
 from erpnext.stock.get_item_details import get_applies_to_details
 from erpnext.vehicles.doctype.vehicle_log.vehicle_log import get_customer_vehicle_selector_data
 from frappe.core.doctype.sms_settings.sms_settings import enqueue_template_sms
@@ -32,7 +32,7 @@ force_fields = ['customer_name', 'tax_id', 'tax_cnic', 'tax_strn',
 ]
 
 
-class Appointment(StatusUpdater):
+class Appointment(StatusUpdaterERP):
 	def get_feed(self):
 		return _("For {0}").format(self.get("customer_name") or self.get('party_name'))
 

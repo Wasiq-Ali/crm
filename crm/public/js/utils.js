@@ -38,7 +38,7 @@ $.extend(crm.utils, {
 			return;
 		}
 
-		let lead = erpnext.utils.get_lead_from_doc(frm, party_type_field);
+		let lead = crm.utils.get_lead_from_doc(frm, party_type_field);
 
 		return frappe.call({
 			method: "crm.crm.utils.get_address_display",
@@ -58,5 +58,53 @@ $.extend(crm.utils, {
 		if (frm.doc.party_name && frm.doc[party_type_field] === "Lead") {
 			return frm.doc.party_name
 		}
-	}
+	},
+
+	set_as_lost_dialog: function(frm) {
+		let dialog = new frappe.ui.Dialog({
+			title: __("Mark As Lost"),
+			fields: [
+				{
+					"fieldtype": "Table MultiSelect",
+					"label": __("Lost Reasons"),
+					"fieldname": "lost_reason",
+					"options": 'Lost Reason Detail',
+					"reqd": 1
+				},
+				{
+					"fieldtype": "Text",
+					"label": __("Detailed Reason"),
+					"fieldname": "detailed_reason"
+				},
+			],
+			primary_action: () => {
+				let values = dialog.get_values();
+				let reasons = values["lost_reason"];
+				let detailed_reason = values["detailed_reason"];
+
+				crm.utils.update_lost_status(frm, true, reasons, detailed_reason);
+				dialog.hide();
+			},
+			primary_action_label: __('Declare Lost')
+		});
+
+		dialog.show();
+	},
+
+	update_lost_status: function(frm, is_lost, lost_reasons_list=null, detailed_reason=null) {
+		return frappe.call({
+			doc: frm.doc,
+			method: "set_is_lost",
+			args: {
+				'is_lost': cint(is_lost),
+				'lost_reasons_list': lost_reasons_list,
+				'detailed_reason': detailed_reason
+			},
+			callback: (r) => {
+				if (!r.exc) {
+					frm.reload_doc();
+				}
+			}
+		});
+	},
 });

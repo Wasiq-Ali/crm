@@ -35,7 +35,7 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 
 				if (!["Lost", "Closed", "Converted"].includes(this.frm.doc.status)) {
 					this.frm.add_custom_button(__("Lost"), () => {
-						this.frm.events.set_as_lost_dialog(this.frm);
+						crm.utils.set_as_lost_dialog(this.frm);
 					}, __("Status"));
 
 					this.frm.add_custom_button(__("Close"), () => {
@@ -47,7 +47,7 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 				if (["Lost", "Closed"].includes(this.frm.doc.status)) {
 					this.frm.add_custom_button(__("Reopen"), () => {
 						if (this.frm.doc.status == "Lost") {
-							this.frm.events.update_lost_status(this.frm, false);
+							crm.utils.update_lost_status(this.frm, false);
 						} else {
 							this.frm.set_value("lost_reasons", [])
 							this.frm.set_value("order_lost_reason", null)

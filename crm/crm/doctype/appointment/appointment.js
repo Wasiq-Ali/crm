@@ -133,7 +133,7 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 			if (me.frm.doc.appointment_for === "Customer") {
 				return erpnext.queries.customer();
 			} else if (me.frm.doc.appointment_for === "Lead") {
-				return erpnext.queries.lead();
+				return crm.queries.lead({"status": ["!=", "Converted"]});
 			}
 		});
 
