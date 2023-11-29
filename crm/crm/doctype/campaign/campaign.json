@@ -17,9 +17,7 @@
   "campaign_schedules_section",
   "campaign_schedules",
   "claim_billing_section",
-  "claim_customer",
-  "column_break_10",
-  "claim_customer_name"
+  "column_break_10"
  ],
  "fields": [
   {
@@ -79,27 +77,12 @@
    "fieldname": "claim_billing_section",
    "fieldtype": "Section Break",
    "label": "Claim Billing"
-  },
-  {
-   "fieldname": "claim_customer",
-   "fieldtype": "Link",
-   "ignore_user_permissions": 1,
-   "label": "Claim Customer",
-   "options": "Customer"
-  },
-  {
-   "depends_on": "eval:doc.claim_customer && doc.claim_customer_name != doc.claim_customer",
-   "fetch_from": "claim_customer.customer_name",
-   "fieldname": "claim_customer_name",
-   "fieldtype": "Data",
-   "label": "Claim Customer Name",
-   "read_only": 1
   }
  ],
  "icon": "fa fa-bullhorn",
  "idx": 1,
  "links": [],
- "modified": "2023-11-29 18:35:33.092721",
+ "modified": "2023-11-29 18:37:55.600024",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Campaign",
