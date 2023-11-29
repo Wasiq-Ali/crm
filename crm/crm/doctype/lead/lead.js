@@ -6,10 +6,7 @@ frappe.provide("crm");
 crm.LeadController = class LeadController extends frappe.ui.form.Controller {
 	setup() {
 		this.frm.custom_make_buttons = {
-			'Customer': 'Customer',
-			'Quotation': 'Quotation',
 			'Opportunity': 'Opportunity',
-			'Vehicle Quotation': 'Vehicle Quotation',
 		}
 
 		this.frm.email_field = 'email_id';
