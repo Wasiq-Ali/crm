@@ -72,7 +72,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "collapsible": 1,
    "collapsible_depends_on": "claim_customer",
    "fieldname": "claim_billing_section",
    "fieldtype": "Section Break",
@@ -82,7 +81,7 @@
  "icon": "fa fa-bullhorn",
  "idx": 1,
  "links": [],
- "modified": "2023-11-29 18:37:55.600024",
+ "modified": "2023-11-29 18:43:17.763016",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Campaign",
