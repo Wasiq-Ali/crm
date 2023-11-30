@@ -1,0 +1,5 @@
+[pre_model_sync]
+
+[post_model_sync]
+crm.patches.refactor_lead_status
+crm.patches.refactor_customer_feedback_party

@@ -124,7 +124,7 @@
    "width": "50%"
   },
   {
-   "default": "Lead",
+   "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -133,7 +133,7 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "Lead\nOpen\nReplied\nInterested\nOpportunity\nLost Opportunity\nConverted\nNot Interested",
+   "options": "Open\nReplied\nInterested\nOpportunity\nLost Opportunity\nConverted\nNot Interested",
    "reqd": 1,
    "search_index": 1
   },
@@ -411,7 +411,7 @@
  "idx": 5,
  "image_field": "image",
  "links": [],
- "modified": "2023-11-29 17:35:49.567538",
+ "modified": "2023-11-30 23:11:12.631111",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Lead",
