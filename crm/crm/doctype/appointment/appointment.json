@@ -213,6 +213,7 @@
   },
   {
    "allow_on_submit": 1,
+   "depends_on": "eval:doc.appointment_for != \"Lead\" || doc.contact_person",
    "fieldname": "contact_person",
    "fieldtype": "Link",
    "label": "Contact Person",
@@ -235,7 +236,7 @@
    "allow_on_submit": 1,
    "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Contact Email",
+   "label": "Email Address",
    "options": "Email",
    "read_only": 1
   },
@@ -250,6 +251,7 @@
   },
   {
    "allow_on_submit": 1,
+   "depends_on": "eval:doc.appointment_for != \"Lead\" || doc.customer_address",
    "fieldname": "customer_address",
    "fieldtype": "Link",
    "label": "Customer Address",
@@ -259,7 +261,7 @@
    "allow_on_submit": 1,
    "fieldname": "address_display",
    "fieldtype": "Small Text",
-   "label": "Customer Address Display",
+   "label": "Address",
    "read_only": 1
   },
   {
@@ -473,7 +475,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-30 12:33:10.106844",
+ "modified": "2023-11-30 21:10:32.820498",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

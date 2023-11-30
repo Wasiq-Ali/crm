@@ -47,7 +47,6 @@
   "column_break_4",
   "customer_address",
   "address_display",
-  "column_break_29",
   "sales_person_mobile_no",
   "sales_person_email",
   "sec_applies_to",
@@ -219,13 +218,13 @@
    "options": "Opportunity Item"
   },
   {
-   "collapsible": 1,
    "fieldname": "contact_info",
    "fieldtype": "Section Break",
    "label": "Contact and Address",
    "options": "fa fa-bullhorn"
   },
   {
+   "depends_on": "eval:doc.opportunity_from != \"Lead\" || doc.customer_address",
    "fieldname": "customer_address",
    "fieldtype": "Link",
    "label": "Party Address",
@@ -252,6 +251,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.opportunity_from != \"Lead\" || doc.contact_person",
    "fieldname": "contact_person",
    "fieldtype": "Link",
    "label": "Contact Person",
@@ -268,14 +268,14 @@
   {
    "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Contact Email",
+   "label": "Email Address",
    "options": "Email",
    "read_only": 1
   },
   {
    "fieldname": "contact_mobile",
    "fieldtype": "Data",
-   "label": "Contact Mobile No",
+   "label": "Mobile No",
    "read_only": 1
   },
   {
@@ -340,10 +340,6 @@
   },
   {
    "fieldname": "column_break_15",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_29",
    "fieldtype": "Column Break"
   },
   {
@@ -418,7 +414,7 @@
   {
    "fieldname": "contact_phone",
    "fieldtype": "Data",
-   "label": "Contact Phone",
+   "label": "Phone No",
    "read_only": 1
   },
   {
@@ -463,15 +459,15 @@
   {
    "fieldname": "sales_person_mobile_no",
    "fieldtype": "Data",
-   "label": "Sales Person Contact Number",
-   "no_copy": 1,
+   "hidden": 1,
+   "label": "Sales Person Mobile No",
    "read_only": 1
   },
   {
    "fieldname": "sales_person_email",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Sales Person Email",
-   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -483,7 +479,7 @@
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2023-11-30 12:33:51.823009",
+ "modified": "2023-11-30 21:11:09.671188",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",
