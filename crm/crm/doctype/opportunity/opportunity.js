@@ -23,15 +23,11 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	setup_buttons() {
-		this.setup_notification_buttons();
-
 		if (!this.frm.doc.__islocal) {
 			if (this.frm.perm[0].write) {
-				this.frm.add_custom_button(__("Schedule Follow Up"), () => this.schedule_follow_up(),
-					__("Communication"));
+				this.frm.add_custom_button(__("Submit Communication"), () => this.submit_communication());
 
-				this.frm.add_custom_button(__("Submit Communication"), () => this.submit_communication(),
-					__("Communication"));
+				this.setup_notification_buttons();
 
 				if (!["Lost", "Closed", "Converted"].includes(this.frm.doc.status)) {
 					this.frm.add_custom_button(__("Lost"), () => {
@@ -204,33 +200,77 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		}
 	}
 
-	schedule_follow_up() {
-		let me = this;
-		me.frm.check_if_unsaved();
+	submit_communication() {
+		this.frm.check_if_unsaved();
 
-		let dialog = new frappe.ui.Dialog({
-			title: __('Schedule a Follow Up'),
-			doc: {},
+		let prev_followup = this.frm.doc.contact_schedule.find(element => !element.contact_date);
+
+		const dialog = new frappe.ui.Dialog({
+			title: __('Submit Communication'),
+			doc: {
+				prev_follow_up_remarks: prev_followup && prev_followup.to_discuss,
+				prev_follow_up_date: prev_followup && prev_followup.schedule_date,
+			},
 			fields: [
+				{
+					fieldname: "remarks",
+					fieldtype: "Small Text",
+					label: __("Remarks"),
+					reqd: 1
+				},
+				{
+					fieldtype: "Section Break", depends_on: "eval:doc.prev_follow_up_remarks || doc.prev_follow_up_date"
+				},
+				{
+					label : "Follow Up Remarks",
+					fieldname: "prev_follow_up_remarks",
+					fieldtype: "Small Text",
+					read_only: 1
+				},
+				{
+					fieldtype: "Column Break"
+				},
+				{
+					label : "Follow Up Date",
+					fieldname: "prev_follow_up_date",
+					fieldtype: "Date",
+					read_only: 1
+				},
+				{
+					fieldtype: "Section Break"
+				},
+				{
+					fieldname: "action",
+					fieldtype: "Select",
+					label: __("Action"),
+					reqd: 1,
+					options: ["", "Submit Remarks Only", "Schedule Follow Up", "Mark As Lost", "Mark As Closed", "Create Appointment"],
+					onchange: () => {
+						let is_followup = dialog.get_value("action") == "Schedule Follow Up";
+						let is_lost = dialog.get_value("action") == "Mark As Lost";
+
+						dialog.set_df_property("schedule_date", "reqd", is_followup ? 1 : 0);
+						dialog.set_df_property("follow_up_days", "reqd", is_followup ? 1 : 0);
+
+						dialog.set_df_property("lost_reason", "reqd", is_lost ? 1 : 0);
+					}
+				},
+				{fieldtype: "Section Break", depends_on: "eval:doc.action == 'Schedule Follow Up'"},
 				{
 					label : "Follow Up in Days",
 					fieldname: "follow_up_days",
 					fieldtype: "Int",
-					default: 0,
 					onchange: () => {
 						let today = frappe.datetime.nowdate();
 						let contact_date = frappe.datetime.add_days(today, dialog.get_value('follow_up_days'));
 						dialog.set_value('schedule_date', contact_date);
 					}
 				},
-				{
-					fieldtype: "Column Break"
-				},
+				{fieldtype: "Column Break"},
 				{
 					label : "Schedule Date",
 					fieldname: "schedule_date",
 					fieldtype: "Date",
-					reqd: 1,
 					onchange: () => {
 						let today = frappe.datetime.get_today();
 						let schedule_date = dialog.get_value('schedule_date');
@@ -238,100 +278,39 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 						dialog.get_field('follow_up_days').refresh();
 					}
 				},
+				{fieldtype: "Section Break", depends_on: "eval:doc.action == 'Mark As Lost'"},
 				{
-					fieldtype: "Section Break"
-				},
-				{
-					label : "To Discuss",
-					fieldname: "to_discuss",
-					fieldtype: "Small Text",
-				},
-			],
-			primary_action: function() {
-				let data = dialog.get_values();
-
-				frappe.call({
-					method: "crm.crm.doctype.opportunity.opportunity.schedule_follow_up",
-					args: {
-						name: me.frm.doc.name,
-						schedule_date: data.schedule_date,
-						to_discuss: data.to_discuss || ""
-					},
-					callback: function (r) {
-						if (!r.exc) {
-							me.frm.reload_doc();
-						}
-					}
-				});
-				dialog.hide();
-			},
-			primary_action_label: __('Schedule')
-		});
-		dialog.show();
-	}
-
-	submit_communication() {
-		let me = this;
-		me.frm.check_if_unsaved();
-
-		let row = this.frm.doc.contact_schedule.find(element => !element.contact_date);
-
-		let dialog = new frappe.ui.Dialog({
-			title: __('Submit Communication'),
-			fields: [
-				{
-					"label" : "Schedule Date",
-					"fieldname": "schedule_date",
-					"fieldtype": "Date",
-					"default": row && row.schedule_date,
-					"read_only": 1
-				},
-				{
-					fieldtype: "Column Break"
-				},
-				{
-					"label" : "Contact Date",
-					"fieldname": "contact_date",
-					"fieldtype": "Date",
-					"reqd": 1,
-					"default": frappe.datetime.nowdate()
-				},
-				{
-					fieldtype: "Section Break"
-				},
-				{
-					"label" : "To Discuss",
-					"fieldname": "to_discuss",
-					"fieldtype": "Small Text",
-					"default": row && row.to_discuss,
-					"read_only": 1
-				},
-				{
-					"label" : "Remarks",
-					"fieldname": "remarks",
-					"fieldtype": "Small Text",
-					"reqd": 1
+					fieldtype: "Table MultiSelect",
+					label: __("Lost Reasons"),
+					fieldname: "lost_reason",
+					options: 'Lost Reason Detail',
 				},
 			],
-			primary_action: function() {
-				let data = dialog.get_values();
-
-				frappe.call({
-					method: "crm.crm.doctype.opportunity.opportunity.submit_communication",
+			primary_action: (dialog_data) => {
+				return frappe.call({
+					method: "crm.crm.doctype.opportunity.opportunity.submit_communication_with_action",
 					args: {
-						opportunity: me.frm.doc.name,
-						contact_date: data.contact_date,
-						remarks: data.remarks,
+						opportunity: this.frm.doc.name,
+						remarks: dialog_data.remarks,
+						action: dialog_data.action,
+						follow_up_date: dialog_data.schedule_date,
+						lost_reason: dialog_data.lost_reason,
+						detailed_reason: dialog_data.detailed_reason,
 					},
-					callback: function (r) {
-						if (!r.exc) {
-							me.frm.reload_doc();
+					callback: (r) => {
+						if (r.message) {
+							dialog.hide();
+
+							this.frm.reload_doc();
+
+							if (r.message.appointment_doc) {
+								frappe.model.sync(r.message.appointment_doc);
+								frappe.set_route("Form", r.message.appointment_doc.doctype, r.message.appointment_doc.name);
+							}
 						}
-					}
+					},
 				});
-				dialog.hide();
-			},
-			primary_action_label: __('Submit')
+			}
 		});
 		dialog.show();
 	}

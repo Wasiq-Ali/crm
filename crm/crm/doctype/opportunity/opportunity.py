@@ -420,11 +420,10 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 
 	if action == "Schedule Follow Up":
 		follow_up_date = getdate(follow_up_date)
-		opp.add_next_follow_up(follow_up_date, to_discuss=remarks)
+		if follow_up_date < getdate():
+			frappe.throw(_("Can't schedule a follow up for past dates"))
 
-	opp.flags.ignore_mandatory = True
-	opp.save()
-	opportunity = opp.name
+		opp.add_next_follow_up(follow_up_date, to_discuss=remarks)
 
 	out = frappe._dict({
 		"opportunity": opp.name,
@@ -441,7 +440,11 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 		appointment_doc = make_appointment(opp.name)
 		out['appointment_doc'] = appointment_doc
 
-	submit_communication(opp.name, contact_date, remarks, update_follow_up=False)
+	submit_communication(opp, contact_date, remarks, update_follow_up=False)
+
+	opp.flags.ignore_mandatory = True
+	opp.save()
+	opportunity = opp.name
 
 	return out
 
@@ -463,10 +466,6 @@ def submit_communication(opportunity, contact_date, remarks, update_follow_up=Tr
 	else:
 		opp = frappe.get_doc("Opportunity", opportunity)
 
-	if cint(update_follow_up):
-		if opp.set_follow_up_contact_date(contact_date):
-			opp.save()
-
 	comm = frappe.new_doc("Communication")
 	comm.reference_doctype = opp.doctype
 	comm.reference_name = opp.name
@@ -484,6 +483,10 @@ def submit_communication(opportunity, contact_date, remarks, update_follow_up=Tr
 	})
 
 	comm.insert(ignore_permissions=True)
+
+	if cint(update_follow_up):
+		if opp.set_follow_up_contact_date(contact_date):
+			opp.save()
 
 
 @frappe.whitelist()
