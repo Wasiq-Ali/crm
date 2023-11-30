@@ -709,11 +709,17 @@ def get_customer_details(args):
 	lead = party if party.doctype == "Lead" else None
 
 	# Address
-	out.customer_address = args.customer_address or get_default_address(party.doctype, party.name)
+	out.customer_address = args.customer_address
+	if not out.customer_address and party.doctype != "Lead":
+		out.customer_address = get_default_address(party.doctype, party.name)
+
 	out.address_display = get_address_display(out.customer_address, lead=lead)
 
 	# Contact
-	out.contact_person = args.contact_person or get_default_contact(party.doctype, party.name)
+	out.contact_person = args.contact_person
+	if not out.contact_person and party.doctype != "Lead":
+		out.contact_person = get_default_contact(party.doctype, party.name)
+
 	out.update(get_contact_details(out.contact_person, lead=lead))
 
 	out.secondary_contact_person = args.secondary_contact_person
