@@ -17,7 +17,7 @@ frappe.ui.form.on("Communication", {
 
 			frm.add_custom_button(__("Opportunity"), () => {
 				frappe.confirm(__(confirm_msg, [__("Opportunity")]), () => {
-					frm.trigger('make_opportunity_from_communication');
+					frm.trigger('create_opportunity_from_communication');
 				})
 			}, __('Create'));
 		}
@@ -38,10 +38,10 @@ frappe.ui.form.on("Communication", {
 		})
 	},
 
-	make_opportunity_from_communication: (frm) => {
+	create_opportunity_from_communication: (frm) => {
 		frappe.confirm(__("Create an Opportunity from Communcation?"), () => {
 			frappe.call({
-				method: "crm.crm.doctype.opportunity.opportunity.make_opportunity_from_communication",
+				method: "crm.crm.doctype.opportunity.opportunity.create_opportunity_from_communication",
 				args: {
 					communication: frm.doc.name,
 				},

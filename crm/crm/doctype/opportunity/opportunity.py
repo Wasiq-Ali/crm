@@ -14,6 +14,7 @@ from frappe.utils.status_updater import StatusUpdater
 from frappe.model.document import Document
 from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
 from crm.crm.utils import get_contact_details, get_address_display
+from frappe.rate_limiter import rate_limit
 import json
 
 
@@ -379,28 +380,6 @@ def auto_mark_opportunity_as_lost():
 
 
 @frappe.whitelist()
-def make_opportunity_from_communication(communication, ignore_communication_links=False):
-	from crm.crm.doctype.lead.lead import make_lead_from_communication
-	doc = frappe.get_doc("Communication", communication)
-
-	lead = doc.reference_name if doc.reference_doctype == "Lead" else None
-	if not lead:
-		lead = make_lead_from_communication(communication, ignore_communication_links=True)
-
-	opportunity_from = "Lead"
-
-	opportunity = frappe.get_doc({
-		"doctype": "Opportunity",
-		"opportunity_from": opportunity_from,
-		"party_name": lead
-	}).insert(ignore_permissions=True)
-
-	link_communication_to_document(doc, "Opportunity", opportunity.name, ignore_communication_links)
-
-	return opportunity.name
-
-
-@frappe.whitelist()
 def schedule_follow_up(name, schedule_date, to_discuss=None):
 	if not schedule_date:
 		frappe.throw(_("Schedule Date is mandatory"))
@@ -524,3 +503,113 @@ def get_events(start, end, filters=None):
 		}, as_dict=True, update={"allDay": 1})
 
 	return data
+
+
+@frappe.whitelist()
+def create_opportunity_from_communication(communication, ignore_communication_links=False):
+	from crm.crm.doctype.lead.lead import make_lead_from_communication
+	doc = frappe.get_doc("Communication", communication)
+
+	lead = doc.reference_name if doc.reference_doctype == "Lead" else None
+	if not lead:
+		lead = make_lead_from_communication(communication, ignore_communication_links=True)
+
+	opportunity_from = "Lead"
+
+	opportunity = frappe.get_doc({
+		"doctype": "Opportunity",
+		"opportunity_from": opportunity_from,
+		"party_name": lead
+	}).insert(ignore_permissions=True)
+
+	link_communication_to_document(doc, "Opportunity", opportunity.name, ignore_communication_links)
+
+	return opportunity.name
+
+
+@frappe.whitelist(allow_guest=True)
+@rate_limit(limit=1000, seconds=60 * 60)
+def make_opportunity_from_lead_form(
+	subject="Website Query",
+	message="",
+	sender="",
+	phone_no="",
+	mobile_no="",
+	full_name="",
+	organization="",
+	country="",
+	opportunity_args=None
+):
+	from frappe.www.contact import send_message as website_send_message
+	website_send_message(sender=sender, subject=subject, message=message, create_communication=False)
+
+	lead = frappe.db.get_value('Lead', {"email_id": sender})
+	if not lead:
+		new_lead = frappe.new_doc("Lead")
+		new_lead.update({
+			"email_id": sender,
+			"lead_name": full_name or sender.split('@')[0].title(),
+			"company_name": organization,
+			"phone": phone_no,
+			"mobile_no": mobile_no,
+		})
+
+		if country:
+			new_lead.country = country
+
+		new_lead.insert(ignore_permissions=True, ignore_mandatory=True)
+		lead = new_lead.name
+	else:
+		old_lead = frappe.get_doc("Lead", lead)
+		old_lead_changed = False
+		if full_name:
+			old_lead.lead_name = full_name or sender.split('@')[0].title()
+			old_lead_changed = True
+		if organization:
+			old_lead.company_name = organization
+			old_lead_changed = True
+		if phone_no:
+			old_lead.phone = phone_no
+			old_lead_changed = True
+
+		# Set current number as primary and set old as secondary
+		if mobile_no and old_lead.mobile_no and old_lead.mobile_no != mobile_no:
+			old_lead.mobile_no_2 = old_lead.mobile_no
+			old_lead.mobile_no = mobile_no
+			old_lead_changed = True
+
+		if old_lead_changed:
+			old_lead.save(ignore_permissions=True, ignore_mandatory=True)
+
+	opportunity = frappe.new_doc("Opportunity")
+
+	opportunity_args = json.loads(opportunity_args) if opportunity_args else {}
+	for k, v in opportunity_args.items():
+		if opportunity.meta.has_field(k):
+			opportunity.set(k, v)
+
+	opportunity.update({
+		"opportunity_from": 'Lead',
+		"party_name": lead,
+		"status": 'Open',
+		"title": subject,
+		"contact_email": sender
+	})
+
+	opportunity.insert(ignore_permissions=True, ignore_mandatory=True)
+
+	comm = frappe.get_doc({
+		"doctype": "Communication",
+		"subject": subject,
+		"content": message,
+		"sender": sender,
+		"sent_or_received": "Received",
+		"reference_doctype": 'Opportunity',
+		"reference_name": opportunity.name,
+		"timeline_links": [
+			{"link_doctype": opportunity.opportunity_from, "link_name": opportunity.party_name}
+		]
+	})
+	comm.insert(ignore_permissions=True)
+
+	return "okay"

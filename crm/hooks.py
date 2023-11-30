@@ -10,6 +10,8 @@ app_license = "GNU General Public License (v3)"
 app_include_js = "crm.bundle.js"
 app_include_css = "crm.bundle.css"
 
+web_include_js = "crm-web.bundle.js"
+
 after_install = "crm.setup.install.after_install"
 setup_wizard_stages = "crm.setup.setup_wizard.get_setup_stages"
 
