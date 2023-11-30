@@ -62,7 +62,7 @@ class Opportunity(StatusUpdater):
 	def set_title(self):
 		self.title = self.customer_name
 		if self.contact_display and self.contact_display != self.customer_name:
-			self.title += " ({0})".format(self.contact_display)
+			self.title = "{0} ({1})".format(self.contact_display, self.customer_name)
 
 	def set_status(self, update=False, status=None, update_modified=True):
 		previous_status = self.status
@@ -301,11 +301,13 @@ def get_customer_details(args):
 	out.update(get_contact_details(out.contact_person, lead=lead))
 
 	out.territory = party.get("territory")
+	out.campaign = party.get("campaign")
 
-	if party.doctype == "Lead":
+	if party.get("sales_person"):
 		out.sales_person = party.get("sales_person")
+
+	if party.get("source") and party.meta.get_options("source") == "Lead Source":
 		out.source = party.get("source")
-		out.campaign = party.get("campaign")
 
 	return out
 

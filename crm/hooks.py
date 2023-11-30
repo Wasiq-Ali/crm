@@ -13,6 +13,8 @@ app_include_css = "crm.bundle.css"
 after_install = "crm.setup.install.after_install"
 setup_wizard_stages = "crm.setup.setup_wizard.get_setup_stages"
 
+boot_session = "crm.boot.boot_session"
+
 doctype_js = {
 	"Communication": "overrides/communication_hooks.js",
 	"Event": "overrides/event_hooks.js",
@@ -48,6 +50,8 @@ standard_queries = {
 }
 
 treeviews = ["Territory", "Sales Person"]
+
+calendars = ["Appointment"]
 
 default_mail_footer = ""
 

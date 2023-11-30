@@ -32,7 +32,7 @@ frappe.listview_settings['Opportunity'] = {
 			listview.page.fields_dict.opportunity_from.get_query = function() {
 				return {
 					"filters": {
-						"name": ["in", ["Customer", "Lead"]],
+						"name": ["in", crm.utils.get_opportunity_allowed_party_types()],
 					}
 				};
 			};

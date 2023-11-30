@@ -81,7 +81,7 @@
  "icon": "fa fa-bullhorn",
  "idx": 1,
  "links": [],
- "modified": "2023-11-29 18:43:17.763016",
+ "modified": "2023-11-29 23:59:31.128440",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Campaign",
@@ -146,8 +146,8 @@
    "role": "Cashier"
   }
  ],
- "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

@@ -10,7 +10,7 @@ frappe.views.calendar["Appointment"] = {
 		"allDay": "allDay"
 	},
 	gantt: false,
-	get_events_method: "erpnext.crm.doctype.appointment.appointment.get_events",
+	get_events_method: "crm.crm.doctype.appointment.appointment.get_events",
 	get_css_class: function(doc) {
 		if (doc.status == "Open") {
 			return "warning";

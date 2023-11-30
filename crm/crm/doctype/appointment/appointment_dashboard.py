@@ -1,5 +1,6 @@
 from frappe import _
 
+
 def get_data():
 	return {
 		'fieldname': 'appointment',
@@ -10,10 +11,6 @@ def get_data():
 			{
 				'label': _('Rescheduled By'),
 				'items': ['Appointment']
-			},
-			{
-				'label': _('Project'),
-				'items': ['Project']
 			},
 		]
 	}

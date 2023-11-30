@@ -1,24 +1,19 @@
 // Copyright (c) 2019, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
-frappe.provide("erpnext.crm");
+frappe.provide("crm");
 
-{% include 'erpnext/crm/doctype/appointment/appointment_slots.js' %};
-{% include 'erpnext/vehicles/customer_vehicle_selector.js' %};
-{% include 'erpnext/public/js/controllers/quick_contacts.js' %};
+{% include 'crm/crm/doctype/appointment/appointment_slots.js' %};
 
-erpnext.crm.AppointmentController = class AppointmentController extends erpnext.contacts.QuickContacts {
+crm.Appointment = class Appointment extends crm.QuickContacts {
 	setup() {
 		this.frm.custom_make_buttons = {
-			'Project': 'Project',
 			'Appointment': 'Reschedule',
 		}
-
-		erpnext.setup_applies_to_fields(this.frm);
 	}
 
 	refresh() {
-		erpnext.hide_company();
+		this.set_appointment_for();
 		this.setup_buttons();
 		this.set_dynamic_field_label();
 		this.set_dynamic_link();
@@ -27,12 +22,40 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 		this.setup_dashboard();
 
 		this.make_appointment_slot_picker();
-		this.make_customer_vehicle_selector();
 	}
 
 	onload() {
 		super.onload();
 		this.setup_queries();
+	}
+
+	setup_queries() {
+		this.frm.set_query("appointment_for", () => {
+			return {
+				"filters": {
+					"name": ["in", crm.utils.get_appointment_allowed_party_types()],
+				}
+			}
+		});
+
+		this.frm.set_query('customer_address', () => {
+			return frappe.contacts.address_query(this.frm.doc);
+		});
+		this.frm.set_query('contact_person', () => {
+			return frappe.contacts.contact_query(this.frm.doc);
+		});
+
+		this.frm.set_query('secondary_contact_person', () => {
+			return frappe.contacts.contact_query(this.frm.doc);
+		});
+	}
+
+	set_appointment_for() {
+		let allowed_party_types = crm.utils.get_appointment_allowed_party_types();
+		if (allowed_party_types.length == 1 && !this.frm.doc.appointment_for) {
+			this.frm.set_value("appointment_for", allowed_party_types[0]);
+			this.frm.set_df_property("appointment_for", "hidden", 1);
+		}
 	}
 
 	setup_buttons() {
@@ -44,14 +67,7 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 			});
 		}
 
-		var customer;
-		if (this.frm.doc.appointment_for == "Customer") {
-			customer = this.frm.doc.party_name;
-		} else if (this.frm.doc.appointment_for == "Lead") {
-			customer = this.frm.doc.__onload && this.frm.doc.__onload.customer;
-		}
-
-		if(this.frm.doc.docstatus == 1 && this.frm.doc.status != "Rescheduled") {
+		if (this.frm.doc.docstatus == 1 && this.frm.doc.status != "Rescheduled") {
 			if (["Open", "Missed"].includes(this.frm.doc.status)) {
 				this.frm.add_custom_button(__('Reschedule'), () => this.reschedule_appointment(),
 					__("Set Status"));
@@ -71,32 +87,20 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 				this.frm.add_custom_button(__('Re-Open'), () => this.update_status("Open"),
 					__("Set Status"));
 			}
-
-			// Create Buttons
-			if (!customer) {
-				this.frm.add_custom_button(__('Customer'), () => {
-					erpnext.utils.make_customer_from_lead(this.frm, this.frm.doc.party_name);
-				}, __('Create'));
-			}
-
-			this.frm.add_custom_button(__('Project'), () => this.make_project(),
-				__('Create'));
-
-			this.frm.page.set_inner_btn_group_as_primary(__('Create'));
 		}
 	}
 
 	setup_notification_buttons() {
 		if(this.frm.doc.docstatus === 1) {
 			if (this.can_notify("Appointment Confirmation")) {
-				var confirmation_count = frappe.get_notification_count(this.frm, 'Appointment Confirmation', 'SMS');
+				let confirmation_count = frappe.get_notification_count(this.frm, 'Appointment Confirmation', 'SMS');
 				let label = __("Appointment Confirmation{0}", [confirmation_count ? " (Resend)" : ""]);
 				this.frm.add_custom_button(label, () => this.send_sms('Appointment Confirmation'),
 					__("Notify"));
 			}
 
 			if (this.can_notify("Appointment Reminder")) {
-				var reminder_count = frappe.get_notification_count(this.frm, 'Appointment Reminder', 'SMS');
+				let reminder_count = frappe.get_notification_count(this.frm, 'Appointment Reminder', 'SMS');
 				let label = __("Appointment Reminder{0}", [reminder_count ? " (Resend)" : ""]);
 				this.frm.add_custom_button(label, () => this.send_sms('Appointment Reminder'),
 					__("Notify"));
@@ -105,7 +109,7 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 
 		if (this.frm.doc.docstatus === 2) {
 			if (this.can_notify("Appointment Cancellation")) {
-				var cancellation_count = frappe.get_notification_count(this.frm, 'Appointment Cancellation', 'SMS');
+				let cancellation_count = frappe.get_notification_count(this.frm, 'Appointment Cancellation', 'SMS');
 				let label = __("Appointment Cancellation{0}", [cancellation_count ? " (Resend)" : ""]);
 				this.frm.add_custom_button(label, () => this.send_sms('Appointment Cancellation'),
 					__("Notify"));
@@ -118,68 +122,37 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 		}
 	}
 
-	setup_queries() {
-		var me = this;
-
-		me.frm.set_query("appointment_for", function () {
-			return {
-				"filters": {
-					"name": ["in", ["Customer", "Lead"]],
-				}
-			}
-		});
-
-		me.frm.set_query("party_name", function () {
-			if (me.frm.doc.appointment_for === "Customer") {
-				return erpnext.queries.customer();
-			} else if (me.frm.doc.appointment_for === "Lead") {
-				return crm.queries.lead({"status": ["!=", "Converted"]});
-			}
-		});
-
-		me.frm.set_query('customer_address', () => {
-			return erpnext.queries.address_query(me.frm.doc);
-		});
-		me.frm.set_query('contact_person', () => {
-			return erpnext.queries.contact_query(me.frm.doc);
-		});
-
-		me.frm.set_query('secondary_contact_person', () => {
-			return erpnext.queries.contact_query(me.frm.doc);
-		});
-	}
-
 	setup_dashboard() {
 		if (this.frm.doc.docstatus == 0) {
 			return;
 		}
 
-		var me = this;
+		let me = this;
 
 		// Notification Status
-		var confirmation_count = frappe.get_notification_count(me.frm, 'Appointment Confirmation', 'SMS');
-		var confirmation_color = confirmation_count ? "green"
+		let confirmation_count = frappe.get_notification_count(me.frm, 'Appointment Confirmation', 'SMS');
+		let confirmation_color = confirmation_count ? "green"
 			: this.can_notify('Appointment Confirmation') ? "yellow" : "light-gray";
-		var confirmation_status = confirmation_count ? __("{0} SMS", [confirmation_count])
+		let confirmation_status = confirmation_count ? __("{0} SMS", [confirmation_count])
 			: __("Not Sent");
 
-		var reminder_count = frappe.get_notification_count(me.frm, 'Appointment Reminder', 'SMS');
-		var reminder_status = __("Not Sent");
-		var reminder_color = "light-gray";
+		let reminder_count = frappe.get_notification_count(me.frm, 'Appointment Reminder', 'SMS');
+		let reminder_status = __("Not Sent");
+		let reminder_color = "light-gray";
 
 		if (reminder_count) {
 			reminder_color = "green";
 			reminder_status = __("{0} SMS", [reminder_count]);
 		} else if (me.frm.doc.__onload && me.frm.doc.__onload.scheduled_reminder) {
-			var scheduled_reminder_str = frappe.datetime.str_to_user(me.frm.doc.__onload.scheduled_reminder);
+			let scheduled_reminder_str = frappe.datetime.str_to_user(me.frm.doc.__onload.scheduled_reminder);
 			reminder_color = "blue";
 			reminder_status = __("Scheduled ({0})", [scheduled_reminder_str]);
 		}
 
-		var cancellation_count = frappe.get_notification_count(me.frm, 'Appointment Cancellation', 'SMS');
-		var cancellation_color = cancellation_count ? "green"
+		let cancellation_count = frappe.get_notification_count(me.frm, 'Appointment Cancellation', 'SMS');
+		let cancellation_color = cancellation_count ? "green"
 			: this.can_notify('Appointment Cancellation') ? "yellow" : "light-gray";
-		var cancellation_status = cancellation_count ? __("{0} SMS", [cancellation_count])
+		let cancellation_status = cancellation_count ? __("{0} SMS", [cancellation_count])
 			: __("Not Sent");
 
 		me.frm.dashboard.add_indicator(__('Appointment Confirmation: {0}', [confirmation_status]), confirmation_color);
@@ -190,8 +163,11 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 	}
 
 	set_dynamic_link() {
-		var doctype = this.frm.doc.appointment_for == 'Lead' ? 'Lead' : 'Customer';
-		frappe.dynamic_link = {doc: this.frm.doc, fieldname: 'party_name', doctype: doctype}
+		frappe.dynamic_link = {
+			doc: this.frm.doc,
+			fieldname: 'party_name',
+			doctype: this.frm.doc.appointment_for || "Lead"
+		}
 	}
 
 	scheduled_date() {
@@ -213,8 +189,8 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 
 	set_scheduled_timeslot(timeslot_start, timeslot_duration) {
 		if (timeslot_start) {
-			var previous_date = this.frm.doc.scheduled_date;
-			var timeslot_start_obj = frappe.datetime.str_to_obj(timeslot_start);
+			let previous_date = this.frm.doc.scheduled_date;
+			let timeslot_start_obj = frappe.datetime.str_to_obj(timeslot_start);
 
 			this.frm.doc.scheduled_date = moment(timeslot_start_obj).format(frappe.defaultDateFormat);
 			this.frm.doc.scheduled_time = moment(timeslot_start_obj).format(frappe.defaultTimeFormat);
@@ -236,18 +212,18 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 
 	set_scheduled_date_time() {
 		if (this.frm.doc.scheduled_date) {
-			var scheduled_date_obj = frappe.datetime.str_to_obj(this.frm.doc.scheduled_date);
+			let scheduled_date_obj = frappe.datetime.str_to_obj(this.frm.doc.scheduled_date);
 			this.frm.doc.scheduled_day_of_week = moment(scheduled_date_obj).format('dddd');
 		} else {
 			this.frm.doc.scheduled_day_of_week = null;
 		}
 
 		if (this.frm.doc.scheduled_date && this.frm.doc.scheduled_time) {
-			var scheduled_dt_obj = frappe.datetime.str_to_obj(this.frm.doc.scheduled_date + " " + this.frm.doc.scheduled_time);
-			var scheduled_dt_str = frappe.datetime.get_datetime_as_string(scheduled_dt_obj);
+			let scheduled_dt_obj = frappe.datetime.str_to_obj(this.frm.doc.scheduled_date + " " + this.frm.doc.scheduled_time);
+			let scheduled_dt_str = frappe.datetime.get_datetime_as_string(scheduled_dt_obj);
 
-			var end_dt_obj = moment(scheduled_dt_obj).add(cint(this.frm.doc.appointment_duration), 'minutes').toDate();
-			var end_dt_str = frappe.datetime.get_datetime_as_string(end_dt_obj);
+			let end_dt_obj = moment(scheduled_dt_obj).add(cint(this.frm.doc.appointment_duration), 'minutes').toDate();
+			let end_dt_str = frappe.datetime.get_datetime_as_string(end_dt_obj);
 
 			this.frm.doc.scheduled_dt = scheduled_dt_str;
 			this.frm.doc.end_dt = end_dt_str;
@@ -263,7 +239,7 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 
 	make_appointment_slot_picker() {
 		if (this.frm.fields_dict.appointment_slot_picker_html) {
-			this.frm.appointment_slot_picker = erpnext.crm.make_appointment_slot_picker(this.frm,
+			this.frm.appointment_slot_picker = crm.make_appointment_slot_picker(this.frm,
 				this.frm.fields_dict.appointment_slot_picker_html.wrapper);
 		}
 	}
@@ -280,49 +256,29 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 		}
 	}
 
-	make_customer_vehicle_selector() {
-		if (this.frm.fields_dict.customer_vehicle_selector_html) {
-			this.frm.customer_vehicle_selector = erpnext.vehicles.make_customer_vehicle_selector(this.frm,
-				this.frm.fields_dict.customer_vehicle_selector_html.wrapper,
-				'applies_to_vehicle',
-				'party_name',
-				'appointment_for'
-			);
-		}
-	}
-
-	reload_customer_vehicle_selector() {
-		if (this.frm.customer_vehicle_selector) {
-			this.frm.customer_vehicle_selector.load_and_render();
-		}
-	}
-
 	appointment_for() {
 		this.set_dynamic_field_label();
 		this.set_dynamic_link();
 		this.frm.set_value("party_name", null);
-		this.reload_customer_vehicle_selector();
 	}
 
 	party_name() {
 		this.get_customer_details();
-		this.reload_customer_vehicle_selector();
 	}
 
 	customer_address() {
-		erpnext.utils.get_address_display(this.frm, "customer_address");
+		crm.utils.get_address_display(this.frm, "appointment_for", "customer_address");
 	}
 
 	get_customer_details() {
-		var me = this;
+		let me = this;
 
-		if (me.frm.doc.company && me.frm.doc.appointment_for && me.frm.doc.party_name) {
+		if (me.frm.doc.appointment_for && me.frm.doc.party_name) {
 			frappe.call({
-				method: "erpnext.crm.doctype.appointment.appointment.get_customer_details",
+				method: "crm.crm.doctype.appointment.appointment.get_customer_details",
 				args: {
 					args: {
 						doctype: me.frm.doc.doctype,
-						company: me.frm.doc.company,
 						appointment_for: me.frm.doc.appointment_for,
 						party_name: me.frm.doc.party_name,
 					}
@@ -351,42 +307,20 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 		}
 	}
 
-	applies_to_vehicle() {
-		this.reload_customer_vehicle_selector();
-	}
-
-	vehicle_chassis_no() {
-		erpnext.utils.format_vehicle_id(this.frm, 'vehicle_chassis_no');
-	}
-	vehicle_engine_no() {
-		erpnext.utils.format_vehicle_id(this.frm, 'vehicle_engine_no');
-	}
-	vehicle_license_plate() {
-		erpnext.utils.format_vehicle_id(this.frm, 'vehicle_license_plate');
-	}
-
-	make_project() {
-		this.frm.check_if_unsaved();
-		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.appointment.appointment.get_project",
-			frm: this.frm
-		});
-	}
-
 	reschedule_appointment() {
 		this.frm.check_if_unsaved();
 		frappe.model.open_mapped_doc({
-			method: "erpnext.crm.doctype.appointment.appointment.get_rescheduled_appointment",
+			method: "crm.crm.doctype.appointment.appointment.get_rescheduled_appointment",
 			frm: this.frm
 		});
 	}
 
 	update_status(status) {
-		var me = this;
+		let me = this;
 		me.frm.check_if_unsaved();
 
 		frappe.call({
-			method: "erpnext.crm.doctype.appointment.appointment.update_status",
+			method: "crm.crm.doctype.appointment.appointment.update_status",
 			args: {
 				appointment: me.frm.doc.name,
 				status: status
@@ -415,4 +349,4 @@ erpnext.crm.AppointmentController = class AppointmentController extends erpnext.
 	}
 };
 
-cur_frm.script_manager.make(erpnext.crm.AppointmentController);
+cur_frm.script_manager.make(crm.Appointment);

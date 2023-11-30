@@ -2,37 +2,32 @@
 # Copyright (c) 2019, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-
 import frappe
-import datetime
 from frappe import _
-from erpnext.controllers.status_updater import StatusUpdaterERP
-from frappe.utils import cint, today, getdate, get_time, get_datetime, combine_datetime, date_diff,\
+from frappe.utils.status_updater import StatusUpdater
+from frappe.utils import (
+	cint, today, getdate, get_time, get_datetime, combine_datetime, date_diff, comma_or,
 	format_datetime, formatdate, get_url, now_datetime, add_days, clean_whitespace
+)
 from frappe.utils.verified_command import get_signed_params
-from erpnext.hr.doctype.employee.employee import get_employee_from_user
+from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
 from frappe.desk.form.assign_to import add as add_assignment, clear as clear_assignments, close_all_assignments
-from six import string_types
 from frappe.contacts.doctype.address.address import get_default_address
 from frappe.contacts.doctype.contact.contact import get_default_contact, get_all_contact_nos
-from erpnext.accounts.party import get_contact_details, get_address_display
-from erpnext.overrides.lead.lead_hooks import get_customer_from_lead
-from erpnext.stock.get_item_details import get_applies_to_details
-from erpnext.vehicles.doctype.vehicle_log.vehicle_log import get_customer_vehicle_selector_data
+from crm.crm.utils import get_contact_details, get_address_display
 from frappe.core.doctype.sms_settings.sms_settings import enqueue_template_sms
 from frappe.core.doctype.notification_count.notification_count import get_all_notification_count
 from frappe.model.mapper import get_mapped_doc
+import datetime
 import json
 
 
-force_fields = ['customer_name', 'tax_id', 'tax_cnic', 'tax_strn',
-	'address_display', 'contact_display', 'contact_email', 'secondary_contact_display',
-	"vehicle_chassis_no", "vehicle_engine_no", "vehicle_license_plate", "vehicle_unregistered",
-	"vehicle_color", "applies_to_item", "applies_to_item_name", "applies_to_variant_of", "applies_to_variant_of_name"
-]
+class Appointment(StatusUpdater):
+	force_party_fields = [
+		'customer_name', 'tax_id', 'tax_cnic', 'tax_strn',
+		'address_display', 'contact_display', 'contact_email', 'secondary_contact_display',
+	]
 
-
-class Appointment(StatusUpdaterERP):
 	def get_feed(self):
 		return _("For {0}").format(self.get("customer_name") or self.get('party_name'))
 
@@ -42,18 +37,12 @@ class Appointment(StatusUpdaterERP):
 		elif self.docstatus == 1:
 			self.set_onload('disallow_on_submit', self.get_disallow_on_submit_fields())
 
-		self.set_onload('customer', self.get_customer())
-		self.set_onload('appointment_timeslots_data', get_appointment_timeslots(self.scheduled_date, self.appointment_type,
-			company=self.company))
+		self.set_onload('appointment_timeslots_data', get_appointment_timeslots(self.scheduled_date, self.appointment_type,))
 		self.set_onload('contact_nos', get_all_contact_nos(self.appointment_for, self.party_name))
 		self.set_onload('notification_count', get_all_notification_count(self.doctype, self.name))
 
 		self.set_can_notify_onload()
 		self.set_scheduled_reminder_onload()
-
-		if self.meta.has_field('applies_to_vehicle'):
-			self.set_onload('customer_vehicle_selector_data', get_customer_vehicle_selector_data(self.get_customer(),
-				self.get('applies_to_vehicle')))
 
 	def validate(self):
 		self.set_missing_values()
@@ -65,8 +54,7 @@ class Appointment(StatusUpdaterERP):
 
 	def before_update_after_submit(self):
 		if self.status not in ["Closed", "Rescheduled"]:
-			self.set_customer_details()
-			self.set_applies_to_details()
+			self.set_missing_values_after_submit()
 
 		self.clean_remarks()
 		self.set_status()
@@ -84,14 +72,24 @@ class Appointment(StatusUpdaterERP):
 
 	def on_cancel(self):
 		self.db_set('status', 'Cancelled')
-		self.validate_on_cancel()
-		self.update_previous_appointment()
+		self.validate_next_document_on_cancel()
 		self.update_opportunity_status()
 		self.auto_unassign()
 		self.send_appointment_cancellation_notification()
 
 	def after_delete(self):
+		self.update_previous_appointment()
 		self.update_opportunity_status()
+
+	@classmethod
+	def get_allowed_party_types(cls):
+		return ["Lead"]
+
+	@classmethod
+	def validate_appointment_for(cls, appointment_for):
+		allowed_party_types = cls.get_allowed_party_types()
+		if appointment_for not in allowed_party_types:
+			frappe.throw(_("Appointment For must be {0}").format(comma_or(allowed_party_types)))
 
 	def get_disallow_on_submit_fields(self):
 		if self.status in ["Closed", "Rescheduled"]:
@@ -99,20 +97,14 @@ class Appointment(StatusUpdaterERP):
 
 		return self.flags.disallow_on_submit or []
 
-	def get_customer(self, throw=False):
-		if self.appointment_for == "Customer":
-			return self.party_name
-		elif self.appointment_for == "Lead":
-			return get_customer_from_lead(self.party_name, throw=throw)
-		else:
-			return None
-
 	def set_missing_values(self):
 		self.set_previous_appointment_details()
 		self.set_missing_duration()
 		self.set_scheduled_date_time()
 		self.set_customer_details()
-		self.set_applies_to_details()
+
+	def set_missing_values_after_submit(self):
+		self.set_customer_details()
 
 	def set_previous_appointment_details(self):
 		if self.previous_appointment:
@@ -153,18 +145,7 @@ class Appointment(StatusUpdaterERP):
 	def set_customer_details(self):
 		customer_details = get_customer_details(self.as_dict())
 		for k, v in customer_details.items():
-			if self.meta.has_field(k) and (not self.get(k) or k in force_fields):
-				self.set(k, v)
-
-	def set_applies_to_details(self):
-		if self.get("applies_to_vehicle"):
-			self.applies_to_serial_no = self.applies_to_vehicle
-
-		args = self.as_dict()
-		applies_to_details = get_applies_to_details(args, for_validate=True)
-
-		for k, v in applies_to_details.items():
-			if self.meta.has_field(k) and not self.get(k) or k in force_fields:
+			if self.meta.has_field(k) and (not self.get(k) or k in self.force_party_fields):
 				self.set(k, v)
 
 	def clean_remarks(self):
@@ -207,7 +188,7 @@ class Appointment(StatusUpdaterERP):
 		appointment_type_doc = frappe.get_cached_doc("Appointment Type", self.appointment_type)
 
 		# check if holiday
-		holiday = appointment_type_doc.is_holiday(self.scheduled_dt, self.company)
+		holiday = appointment_type_doc.is_holiday(self.scheduled_dt)
 		if holiday:
 			frappe.msgprint(_("{0} is a holiday: {1}")
 				.format(frappe.bold(formatdate(self.scheduled_dt, "EEEE, d MMMM, y")), holiday),
@@ -245,12 +226,11 @@ class Appointment(StatusUpdaterERP):
 		if self.previous_appointment:
 			doc = frappe.get_doc("Appointment", self.previous_appointment)
 			doc.set_status(update=True)
-
-			if self.docstatus == 2:
-				doc.validate_timeslot_availability()
-
 			doc.auto_unassign()
 			doc.notify_update()
+
+	def validate_next_document_on_cancel(self):
+		pass
 
 	def create_lead_and_link(self):
 		if self.party_name:
@@ -295,11 +275,12 @@ class Appointment(StatusUpdaterERP):
 			'event_participants': event_participants
 		})
 
-		employee = get_employee_from_user(self._assign)
-		if employee:
+		sales_person = get_sales_person_from_user(self._assign)
+		if sales_person:
 			appointment_event.append('event_participants', dict(
-				reference_doctype='Employee',
-				reference_docname=employee.name))
+				reference_doctype='Sales Person',
+				reference_docname=sales_person
+			))
 
 		appointment_event.insert(ignore_permissions=True)
 
@@ -453,15 +434,6 @@ class Appointment(StatusUpdaterERP):
 					'status': self.status,
 					'is_closed': self.is_closed,
 				}, update_modified=update_modified)
-
-	def get_linked_project(self):
-		return frappe.db.get_value("Project", {'appointment': self.name})
-
-	def validate_on_cancel(self):
-		project = self.get_linked_project()
-		if project:
-			frappe.throw(_("Cannot cancel appointment because it is closed by {0}")
-				.format(frappe.get_desk_link("Project", project)))
 
 	def get_timeslot_str(self):
 		if self.scheduled_dt == self.end_dt:
@@ -629,7 +601,7 @@ def check_agent_availability(agent, scheduled_dt, end_dt):
 
 
 @frappe.whitelist()
-def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None, company=None):
+def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None):
 	out = frappe._dict({
 		'holiday': None,
 		'timeslots': []
@@ -641,7 +613,7 @@ def get_appointment_timeslots(scheduled_date, appointment_type, appointment=None
 	scheduled_date = getdate(scheduled_date)
 	appointment_type_doc = frappe.get_cached_doc("Appointment Type", appointment_type)
 
-	out.holiday = appointment_type_doc.is_holiday(scheduled_date, company=company)
+	out.holiday = appointment_type_doc.is_holiday(scheduled_date)
 
 	timeslots = appointment_type_doc.get_timeslots(scheduled_date)
 	no_of_agents = cint(appointment_type_doc.number_of_agents)
@@ -707,7 +679,9 @@ def auto_mark_missed():
 
 @frappe.whitelist()
 def get_customer_details(args):
-	if isinstance(args, string_types):
+	from frappe.model.base_document import get_controller
+
+	if isinstance(args, str):
 		args = json.loads(args)
 
 	args = frappe._dict(args)
@@ -716,8 +690,8 @@ def get_customer_details(args):
 	if not args.appointment_for or not args.party_name:
 		frappe.throw(_("Party is mandatory"))
 
-	if args.appointment_for not in ['Customer', 'Lead']:
-		frappe.throw(_("Appointment For must be either Customer or Lead"))
+	appointment_controler = get_controller("Appointment")
+	appointment_controler.validate_appointment_for(args.appointment_for)
 
 	party = frappe.get_cached_doc(args.appointment_for, args.party_name)
 
@@ -725,7 +699,7 @@ def get_customer_details(args):
 	if party.doctype == "Lead":
 		out.customer_name = party.company_name or party.lead_name
 	else:
-		out.customer_name = party.customer_name
+		out.customer_name = party.get("customer_name")
 
 	# Tax IDs
 	out.tax_id = party.get('tax_id')
@@ -750,38 +724,6 @@ def get_customer_details(args):
 	out.contact_nos = get_all_contact_nos(party.doctype, party.name)
 
 	return out
-
-
-@frappe.whitelist()
-def get_project(source_name, target_doc=None):
-	def set_missing_values(source, target):
-		customer = source.get_customer(throw=True)
-		if customer:
-			target.customer = customer
-			target.contact_mobile = source.get('contact_mobile')
-			target.contact_mobile_2 = source.get('contact_mobile_2')
-			target.contact_phone = source.get('contact_phone')
-
-		if target.applies_to_item and frappe.get_cached_value("Item", target.applies_to_item, "has_variants"):
-			target.applies_to_item = None
-			target.applies_to_variant_of = None
-
-		target.run_method("set_missing_values")
-
-	doclist = get_mapped_doc("Appointment", source_name, {
-		"Appointment": {
-			"doctype": "Project",
-			"field_map": {
-				"name": "appointment",
-				"scheduled_dt": "appointment_dt",
-				"voice_of_customer": "project_name",
-				"description": "description",
-				"applies_to_vehicle": "applies_to_vehicle",
-			}
-		}
-	}, target_doc, set_missing_values)
-
-	return doclist
 
 
 @frappe.whitelist()
@@ -878,7 +820,7 @@ def get_appointments_for_reminder_notification(reminder_date=None, appointments=
 
 	appointment_date = add_days(reminder_date, remind_days_before)
 
-	if appointments and isinstance(appointments, string_types):
+	if appointments and isinstance(appointments, str):
 		appointments = [appointments]
 
 	appointments_condition = " and a.name in %(appointments)s" if appointments else ""

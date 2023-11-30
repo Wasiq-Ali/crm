@@ -7,6 +7,7 @@
  "doctype": "DocType",
  "document_type": "Document",
  "editable_grid": 1,
+ "email_append_to": 1,
  "engine": "InnoDB",
  "field_order": [
   "title",
@@ -122,7 +123,6 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "hidden": 1,
-   "in_standard_filter": 1,
    "label": "Title",
    "no_copy": 1
   },
@@ -269,6 +269,7 @@
    "fieldname": "contact_email",
    "fieldtype": "Data",
    "label": "Contact Email",
+   "options": "Email",
    "read_only": 1
   },
   {
@@ -482,7 +483,7 @@
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2023-11-29 17:45:26.555582",
+ "modified": "2023-11-30 12:33:51.823009",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",
@@ -524,9 +525,11 @@
   }
  ],
  "search_fields": "status,transaction_date,party_name,customer_name,opportunity_type",
+ "sender_field": "contact_email",
  "sort_field": "transaction_date",
  "sort_order": "DESC",
  "states": [],
+ "subject_field": "title",
  "timeline_field": "party_name",
  "title_field": "title",
  "track_changes": 1,

@@ -14,7 +14,7 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	refresh() {
-		this.set_opportunity_from()
+		this.set_opportunity_from();
 		this.set_dynamic_link();
 		this.update_dynamic_fields();
 		this.set_sales_person_from_user();
@@ -93,7 +93,7 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 		me.frm.set_query("opportunity_from", () => {
 			return {
 				"filters": {
-					"name": ["in", this.get_allowed_party_types()],
+					"name": ["in", crm.utils.get_opportunity_allowed_party_types()],
 				}
 			}
 		});
@@ -103,15 +103,11 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	}
 
 	set_opportunity_from() {
-		let allowed_party_types = this.get_allowed_party_types();
+		let allowed_party_types = crm.utils.get_opportunity_allowed_party_types();
 		if (allowed_party_types.length == 1 && !this.frm.doc.opportunity_from) {
 			this.frm.set_value("opportunity_from", allowed_party_types[0]);
 			this.frm.set_df_property("opportunity_from", "hidden", 1);
 		}
-	}
-
-	get_allowed_party_types() {
-		return ["Lead"]
 	}
 
 	setup_dashboard() {
@@ -189,13 +185,12 @@ crm.Opportunity = class Opportunity extends frappe.ui.form.Controller {
 	get_customer_details() {
 		let me = this;
 
-		if (me.frm.doc.company && me.frm.doc.opportunity_from && me.frm.doc.party_name) {
+		if (me.frm.doc.opportunity_from && me.frm.doc.party_name) {
 			return frappe.call({
 				method: "crm.crm.doctype.opportunity.opportunity.get_customer_details",
 				args: {
 					args: {
 						doctype: me.frm.doc.doctype,
-						company: me.frm.doc.company,
 						opportunity_from: me.frm.doc.opportunity_from,
 						party_name: me.frm.doc.party_name,
 					}

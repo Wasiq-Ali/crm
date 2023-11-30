@@ -107,4 +107,11 @@ $.extend(crm.utils, {
 			}
 		});
 	},
+
+	get_opportunity_allowed_party_types: function () {
+		return frappe.boot.opportunity_allowed_party_types || ["Lead"];
+	},
+	get_appointment_allowed_party_types: function () {
+		return frappe.boot.appointment_allowed_party_types || ["Lead"];
+	},
 });

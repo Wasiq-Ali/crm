@@ -1,15 +1,15 @@
-frappe.provide("erpnext.crm");
+frappe.provide("crm");
 
-erpnext.crm.make_appointment_slot_picker = function (frm, wrapper, title) {
+crm.make_appointment_slot_picker = function (frm, wrapper, title) {
 	$(wrapper).empty();
 	if (title) {
 		$(`<label class="control-label">${title}</label>`).appendTo(wrapper);
 	}
 	var slotpicker_area = $('<div style="margin-bottom: -10px;"></div>').appendTo(wrapper);
-	return new erpnext.crm.AppointmentSlotPicker(frm, slotpicker_area);
+	return new crm.AppointmentSlotPicker(frm, slotpicker_area);
 };
 
-erpnext.crm.AppointmentSlotPicker = Class.extend({
+crm.AppointmentSlotPicker = Class.extend({
 	init: function(frm, wrapper) {
 		var me = this;
 
@@ -45,11 +45,10 @@ erpnext.crm.AppointmentSlotPicker = Class.extend({
 
 		if (me.frm.doc.scheduled_date && me.frm.doc.appointment_type) {
 			frappe.call({
-				method: "erpnext.crm.doctype.appointment.appointment.get_appointment_timeslots",
+				method: "crm.crm.doctype.appointment.appointment.get_appointment_timeslots",
 				args: {
 					scheduled_date: me.frm.doc.scheduled_date,
 					appointment_type: me.frm.doc.appointment_type,
-					company: me.frm.doc.company,
 				},
 				callback: function (r) {
 					if (r.message && !r.exc) {

@@ -15,15 +15,16 @@
   "auto_assign_agent",
   "availability_section",
   "number_of_agents",
-  "holiday_list",
   "column_break_8",
   "appointment_duration",
+  "column_break_kqjwq",
   "advance_booking_days",
   "slots_section",
   "availability_of_slots",
   "agents_section",
   "agent_list",
-  "column_break_15"
+  "holidays_section",
+  "column_break_lyep1"
  ],
  "fields": [
   {
@@ -62,13 +63,6 @@
    "fieldtype": "Table MultiSelect",
    "label": "Agents",
    "options": "Assignment Rule User"
-  },
-  {
-   "fieldname": "holiday_list",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Holiday List",
-   "options": "Holiday List"
   },
   {
    "default": "60",
@@ -112,10 +106,6 @@
    "label": "Auto Assign Agent"
   },
   {
-   "fieldname": "column_break_15",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "column_break_8",
    "fieldtype": "Column Break"
   },
@@ -128,13 +118,27 @@
    "fieldname": "create_calendar_event",
    "fieldtype": "Check",
    "label": "Create Calendar Event"
+  },
+  {
+   "fieldname": "column_break_kqjwq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "holidays_section",
+   "fieldtype": "Section Break",
+   "label": "Holidays"
+  },
+  {
+   "fieldname": "column_break_lyep1",
+   "fieldtype": "Column Break"
   }
  ],
  "links": [],
- "modified": "2023-11-28 21:35:16.704458",
+ "modified": "2023-11-30 01:27:55.077514",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
