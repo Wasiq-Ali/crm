@@ -12,6 +12,11 @@ lead_sources = [
 	"Walk In"
 ]
 
+opportunity_types = [
+	"Sales",
+	"Support",
+]
+
 market_segments = [
 	"Lower Income",
 	"Middle Income",
@@ -87,6 +92,7 @@ industry_types = [
 def get_default_records(country):
 	return {
 		"Lead Source": [{"doctype": "Lead Source", "source_name": _(d)} for d in lead_sources],
+		"Opportunity Type": [{"doctype": "Opportunity Type", "name": _(d)} for d in opportunity_types],
 		"Market Segment": [{"doctype": "Market Segment", "market_segment": _(d)} for d in market_segments],
 		"Sales Stage": [{"doctype": "Sales Stage", "stage_name": _(d)} for d in sales_stages],
 		"Industry Type": [{"doctype": "Industry Type", "industry": _(d)} for d in industry_types],
