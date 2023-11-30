@@ -416,7 +416,7 @@ class Appointment(StatusUpdater):
 
 			if is_rescheduled:
 				self.status = "Rescheduled"
-			elif self.is_closed or self.get_linked_project():
+			elif self.is_appointment_closed():
 				self.status = "Closed"
 			elif self.is_missed or getdate(today()) > getdate(self.scheduled_date):
 				self.status = "Missed"
@@ -434,6 +434,9 @@ class Appointment(StatusUpdater):
 					'status': self.status,
 					'is_closed': self.is_closed,
 				}, update_modified=update_modified)
+
+	def is_appointment_closed(self):
+		return cint(self.is_closed)
 
 	def get_timeslot_str(self):
 		if self.scheduled_dt == self.end_dt:
@@ -538,6 +541,7 @@ class Appointment(StatusUpdater):
 		if self.opportunity:
 			doc = frappe.get_doc("Opportunity", self.opportunity)
 			doc.set_status(update=True)
+			doc.update_lead_status()
 			doc.notify_update()
 
 	def send_appointment_confirmation_notification(self):
@@ -688,12 +692,12 @@ def get_customer_details(args):
 	out = frappe._dict()
 
 	if not args.appointment_for or not args.party_name:
-		frappe.throw(_("Party is mandatory"))
+		party = frappe._dict()
+	else:
+		appointment_controler = get_controller("Appointment")
+		appointment_controler.validate_appointment_for(args.appointment_for)
 
-	appointment_controler = get_controller("Appointment")
-	appointment_controler.validate_appointment_for(args.appointment_for)
-
-	party = frappe.get_cached_doc(args.appointment_for, args.party_name)
+		party = frappe.get_cached_doc(args.appointment_for, args.party_name)
 
 	# Customer Name
 	if party.doctype == "Lead":
