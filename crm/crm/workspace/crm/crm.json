@@ -1,7 +1,8 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Customer Relationship Management Module</b></span>\",\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Sales Pipeline\",\"col\":3}},{\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":3}},{\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":3}},{\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance\",\"col\":3}}]",
+ "content": "[{\"id\":\"hp4E-byrJW\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Customer Relationship Management Module</b></span>\",\"col\":12}},{\"id\":\"BbEQ_O6IJA\",\"type\":\"card\",\"data\":{\"card_name\":\"Sales Pipeline\",\"col\":3}},{\"id\":\"BIDKrqwEea\",\"type\":\"card\",\"data\":{\"card_name\":\"Appointments\",\"col\":3}},{\"id\":\"oWDfMqsqjN\",\"type\":\"card\",\"data\":{\"card_name\":\"Segmentation\",\"col\":3}},{\"id\":\"VYoI_ALzfc\",\"type\":\"card\",\"data\":{\"card_name\":\"Campaigns\",\"col\":3}},{\"id\":\"SHAcNVq4ml\",\"type\":\"card\",\"data\":{\"card_name\":\"Email\",\"col\":3}},{\"id\":\"XSiSEjjJqy\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS\",\"col\":3}},{\"id\":\"DAPgkPS4MB\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":3}},{\"id\":\"5lXlC1MLYU\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":3}}]",
  "creation": "2022-11-16 04:31:56.102428",
+ "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -14,91 +15,60 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Sales Pipeline",
-   "link_count": 0,
-   "link_type": "DocType",
+   "label": "SMS",
+   "link_count": 4,
    "onboard": 0,
    "type": "Card Break"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Lead",
+   "label": "SMS Center",
    "link_count": 0,
-   "link_to": "Lead",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Opportunity",
-   "link_count": 0,
-   "link_to": "Opportunity",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer",
-   "link_count": 0,
-   "link_to": "Customer",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Contact",
-   "link_count": 0,
-   "link_to": "Contact",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Communication",
-   "link_count": 0,
-   "link_to": "Communication",
+   "link_to": "SMS Center",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Lead Source",
+   "label": "SMS Template",
    "link_count": 0,
-   "link_to": "Lead Source",
+   "link_to": "SMS Template",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Contract",
+   "label": "SMS Log",
    "link_count": 0,
-   "link_to": "Contract",
+   "link_to": "SMS Log",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
   {
-   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Settings",
+   "link_count": 0,
+   "link_to": "SMS Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Appointments",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
    "hidden": 0,
    "is_query_report": 0,
    "label": "Appointment",
@@ -109,7 +79,120 @@
    "type": "Link"
   },
   {
-   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Appointment Type",
+   "link_count": 0,
+   "link_to": "Appointment Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Appointment Source",
+   "link_count": 0,
+   "link_to": "Appointment Source",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Appointment Booking Settings",
+   "link_count": 0,
+   "link_to": "Appointment Booking Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Segmentation",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Territory",
+   "link_count": 0,
+   "link_to": "Territory",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Stage",
+   "link_count": 0,
+   "link_to": "Sales Stage",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Industry Type",
+   "link_count": 0,
+   "link_to": "Industry Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Market Segment",
+   "link_count": 0,
+   "link_to": "Market Segment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Campaigns",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Campaign",
+   "link_count": 0,
+   "link_to": "Campaign",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Email Campaign",
+   "link_count": 0,
+   "link_to": "Email Campaign",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Email",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
    "hidden": 0,
    "is_query_report": 0,
    "label": "Newsletter",
@@ -122,114 +205,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Settings",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "CRM Settings",
-   "link_count": 0,
-   "link_to": "CRM Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer Group",
-   "link_count": 0,
-   "link_to": "Customer Group",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Territory",
-   "link_count": 0,
-   "link_to": "Territory",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Sales Person",
-   "link_count": 0,
-   "link_to": "Sales Person",
-   "link_type": "DocType",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Campaign",
-   "link_count": 0,
-   "link_to": "Campaign",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Email Campaign",
-   "link_count": 0,
-   "link_to": "Email Campaign",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "SMS Center",
-   "link_count": 0,
-   "link_to": "SMS Center",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "SMS Log",
-   "link_count": 0,
-   "link_to": "SMS Log",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "SMS Settings",
-   "link_count": 0,
-   "link_to": "SMS Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "",
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Email Group",
    "link_count": 0,
    "link_to": "Email Group",
@@ -240,40 +215,67 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance",
-   "link_count": 3,
+   "label": "Email Template",
+   "link_count": 0,
+   "link_to": "Email Template",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Email Account",
+   "link_count": 0,
+   "link_to": "Email Account",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Pipeline",
+   "link_count": 4,
    "onboard": 0,
    "type": "Card Break"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance Schedule",
+   "label": "Lead",
    "link_count": 0,
-   "link_to": "Maintenance Schedule",
+   "link_to": "Lead",
    "link_type": "DocType",
    "onboard": 1,
    "type": "Link"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Maintenance Visit",
+   "label": "Opportunity",
    "link_count": 0,
-   "link_to": "Maintenance Visit",
+   "link_to": "Opportunity",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Contract",
+   "link_count": 0,
+   "link_to": "Contract",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
   {
-   "dependencies": "",
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Warranty Claim",
+   "label": "Sales Person",
    "link_count": 0,
-   "link_to": "Warranty Claim",
+   "link_to": "Sales Person",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -282,7 +284,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 9,
+   "link_count": 7,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -320,16 +322,6 @@
    "type": "Link"
   },
   {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Customer Birthday",
-   "link_count": 0,
-   "link_to": "Customer Birthday",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
    "dependencies": "Opportunity",
    "hidden": 0,
    "is_query_report": 1,
@@ -347,17 +339,6 @@
    "label": "Addresses And Contacts",
    "link_count": 0,
    "link_to": "Addresses And Contacts",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "dependencies": "Sales Order",
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Inactive Customers",
-   "link_count": 0,
-   "link_to": "Inactive Customers",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -383,9 +364,67 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings",
+   "link_count": 5,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "CRM Settings",
+   "link_count": 0,
+   "link_to": "CRM Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Opportunity Type",
+   "link_count": 0,
+   "link_to": "Opportunity Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Opportunity Lost Reason",
+   "link_count": 0,
+   "link_to": "Opportunity Lost Reason",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Lead Source",
+   "link_count": 0,
+   "link_to": "Lead Source",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Lead Information Source",
+   "link_count": 0,
+   "link_to": "Lead Information Source",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-08-21 01:52:18.867345",
+ "modified": "2023-12-01 00:15:02.536080",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "CRM",
