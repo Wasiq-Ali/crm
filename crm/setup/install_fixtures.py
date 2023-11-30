@@ -1,3 +1,4 @@
+import frappe
 from frappe import _
 
 lead_sources = [
@@ -108,3 +109,15 @@ def get_default_records(country):
 				'parent_territory': _('All Territories')},
 		]
 	}
+
+
+def create_default_records(country):
+	data = get_default_records(country)
+
+	for doctype, records in data.items():
+		if frappe.db.count(doctype):
+			continue
+
+		for d in records:
+			doc = frappe.get_doc(d)
+			doc.insert(ignore_permissions=True, ignore_if_duplicate=True)

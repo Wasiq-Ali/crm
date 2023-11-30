@@ -1,6 +1,5 @@
-import frappe
 from frappe import _
-from crm.setup.install_fixtures import get_default_records
+from crm.setup.install_fixtures import create_default_records
 
 
 def get_setup_stages(args=None):
@@ -23,15 +22,3 @@ def get_setup_stages(args=None):
 
 def stage_fixtures(args):
 	create_default_records(args.get("country"))
-
-
-def create_default_records(country):
-	data = get_default_records(country)
-
-	for doctype, records in data.items():
-		if frappe.db.count(doctype):
-			continue
-
-		for d in records:
-			doc = frappe.get_doc(d)
-			doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
