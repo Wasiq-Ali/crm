@@ -7,7 +7,6 @@
  "engine": "InnoDB",
  "field_order": [
   "appointment_type_name",
-  "enable_online_booking",
   "create_calendar_event",
   "email_reminders",
   "column_break_4",
@@ -33,12 +32,6 @@
    "label": "Appointment Type Name",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "enable_online_booking",
-   "fieldtype": "Check",
-   "label": "Enable Online Booking"
   },
   {
    "fieldname": "availability_section",
@@ -134,7 +127,7 @@
   }
  ],
  "links": [],
- "modified": "2023-11-30 01:27:55.077514",
+ "modified": "2023-12-01 00:20:47.150285",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
