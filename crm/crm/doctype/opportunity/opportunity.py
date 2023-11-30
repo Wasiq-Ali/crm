@@ -327,6 +327,7 @@ def make_appointment(source_name, target_doc=None):
 			"doctype": "Appointment",
 			"field_map": {
 				"name": "opportunity",
+				"opportunity_from": "appointment_for",
 				"applies_to_vehicle": "applies_to_vehicle",
 				"applies_to_serial_no": "applies_to_serial_no"
 			}
