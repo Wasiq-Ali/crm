@@ -28,7 +28,7 @@ frappe.listview_settings['Opportunity'] = {
 			listview.call_for_selected_items(method, {"status": "Closed"});
 		});
 
-		if(listview.page.fields_dict.opportunity_from) {
+		if (listview.page.fields_dict.opportunity_from) {
 			listview.page.fields_dict.opportunity_from.get_query = function() {
 				return {
 					"filters": {

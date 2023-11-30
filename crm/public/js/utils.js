@@ -114,4 +114,7 @@ $.extend(crm.utils, {
 	get_appointment_allowed_party_types: function () {
 		return frappe.boot.appointment_allowed_party_types || ["Lead"];
 	},
+	get_feedback_allowed_party_types: function () {
+		return frappe.boot.feedback_allowed_party_types || ["Lead"];
+	},
 });

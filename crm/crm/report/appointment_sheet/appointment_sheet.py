@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.utils import getdate, nowdate, cint, format_time, format_datetime, now_datetime
-from crm.crm.doctype.appointment import get_appointments_for_reminder_notification,\
+from crm.crm.doctype.appointment.appointment import get_appointments_for_reminder_notification,\
 	get_appointment_reminders_scheduled_time, get_reminder_date_from_appointment_date, automated_reminder_enabled
 
 date_format = "d/MM/y"

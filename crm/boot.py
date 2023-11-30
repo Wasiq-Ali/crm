@@ -25,3 +25,4 @@ def update_page_info(bootinfo):
 def update_allowed_party_types(bootinfo):
 	bootinfo.opportunity_allowed_party_types = get_controller("Opportunity").get_allowed_party_types()
 	bootinfo.appointment_allowed_party_types = get_controller("Appointment").get_allowed_party_types()
+	bootinfo.feedback_allowed_party_types = get_controller("Customer Feedback").get_allowed_party_types()
