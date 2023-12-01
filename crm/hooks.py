@@ -34,6 +34,17 @@ doc_events = {
 	}
 }
 
+fixtures = [
+	{
+		"doctype": "Custom Field",
+		"filters": {
+			"name": ["in", [
+				"Contact Query Option-opportunity_type",
+			]]
+		}
+	},
+]
+
 scheduler_events = {
 	"all": [
 		"crm.crm.doctype.appointment.appointment.send_appointment_reminder_notifications",

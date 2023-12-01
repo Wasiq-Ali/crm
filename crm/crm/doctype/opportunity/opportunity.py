@@ -3,7 +3,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import today, getdate, cint, clean_whitespace, comma_or
+from frappe.utils import today, getdate, cint, clean_whitespace, comma_or, cstr
 from frappe.model.mapper import get_mapped_doc
 from frappe.email.inbox import link_communication_to_document
 from frappe.contacts.doctype.address.address import get_default_address
@@ -606,6 +606,10 @@ def make_opportunity_from_lead_form(
 		"contact_email": sender
 	})
 
+	opportunity_type = get_opportunity_type_from_query_option(subject)
+	if opportunity_type:
+		opportunity.opportunity_type = opportunity_type
+
 	opportunity.insert(ignore_permissions=True, ignore_mandatory=True)
 
 	comm = frappe.get_doc({
@@ -623,3 +627,17 @@ def make_opportunity_from_lead_form(
 	comm.insert(ignore_permissions=True)
 
 	return "okay"
+
+
+def get_opportunity_type_from_query_option(option):
+	option = cstr(option)
+	if not option:
+		return None
+
+	contact_us_settings = frappe.get_cached_doc("Contact Us Settings", None)
+	row = [d for d in contact_us_settings.query_options if d.option == option]
+
+	if not row:
+		return None
+
+	return row[0].opportunity_type
