@@ -39,6 +39,7 @@ fixtures = [
 		"doctype": "Custom Field",
 		"filters": {
 			"name": ["in", [
+				"Contact Us Settings-default_lead_source",
 				"Contact Query Option-opportunity_type",
 			]]
 		}
