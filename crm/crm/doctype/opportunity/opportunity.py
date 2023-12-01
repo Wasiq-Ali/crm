@@ -543,16 +543,33 @@ def make_opportunity_from_lead_form(
 	subject="Website Query",
 	message="",
 	sender="",
-	phone_no="",
-	mobile_no="",
 	full_name="",
 	organization="",
+	mobile_no="",
+	phone_no="",
 	country="",
 	opportunity_args=None
 ):
+	# Forward Email Message
 	from frappe.www.contact import send_message as website_send_message
-	website_send_message(sender=sender, subject=subject, message=message, create_communication=False)
+	opportunity_args = json.loads(opportunity_args) if opportunity_args else {}
 
+	forward_message_args = {
+		"full_name": full_name,
+		"organization": organization,
+		"mobile_no": mobile_no,
+		"phone_no": phone_no,
+		"country": country,
+	}
+
+	for key, value in opportunity_args:
+		if not forward_message_args.get(key):
+			forward_message_args[key] = value
+
+	website_send_message(sender=sender, subject=subject, message=message, args=forward_message_args,
+		create_communication=False)
+
+	# Create/Update Lead
 	lead = frappe.db.get_value('Lead', {"email_id": sender})
 	if not lead:
 		new_lead = frappe.new_doc("Lead")
@@ -591,9 +608,9 @@ def make_opportunity_from_lead_form(
 		if old_lead_changed:
 			old_lead.save(ignore_permissions=True, ignore_mandatory=True)
 
+	# Create Opportunity
 	opportunity = frappe.new_doc("Opportunity")
 
-	opportunity_args = json.loads(opportunity_args) if opportunity_args else {}
 	for k, v in opportunity_args.items():
 		if opportunity.meta.has_field(k):
 			opportunity.set(k, v)
@@ -612,6 +629,7 @@ def make_opportunity_from_lead_form(
 
 	opportunity.insert(ignore_permissions=True, ignore_mandatory=True)
 
+	# Create Communication
 	comm = frappe.get_doc({
 		"doctype": "Communication",
 		"subject": subject,
