@@ -3,7 +3,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import today, getdate, cint, clean_whitespace, comma_or, cstr
+from frappe.utils import today, getdate, cint, clean_whitespace, comma_or, cstr, validate_email_address
 from frappe.model.mapper import get_mapped_doc
 from frappe.email.inbox import link_communication_to_document
 from frappe.contacts.doctype.address.address import get_default_address
@@ -545,6 +545,7 @@ def make_opportunity_from_lead_form(
 	sender="",
 	full_name="",
 	organization="",
+	designation="",
 	mobile_no="",
 	phone_no="",
 	country="",
@@ -552,6 +553,12 @@ def make_opportunity_from_lead_form(
 ):
 	# Forward Email Message
 	from frappe.www.contact import send_message as website_send_message
+
+	if not sender:
+		frappe.throw(_("Please enter your email address"))
+
+	sender = validate_email_address(sender, throw=True)
+
 	opportunity_args = json.loads(opportunity_args) if opportunity_args else {}
 
 	forward_message_args = {
@@ -562,12 +569,14 @@ def make_opportunity_from_lead_form(
 		"country": country,
 	}
 
-	for key, value in opportunity_args:
+	for key, value in opportunity_args.items():
 		if not forward_message_args.get(key):
 			forward_message_args[key] = value
 
 	website_send_message(sender=sender, subject=subject, message=message, args=forward_message_args,
 		create_communication=False)
+
+	default_lead_source = frappe.db.get_single_value("Contact Us Settings", "default_lead_source")
 
 	# Create/Update Lead
 	lead = frappe.db.get_value('Lead', {"email_id": sender})
@@ -577,14 +586,17 @@ def make_opportunity_from_lead_form(
 			"email_id": sender,
 			"lead_name": full_name or sender.split('@')[0].title(),
 			"company_name": organization,
+			"designation": designation,
 			"phone": phone_no,
 			"mobile_no": mobile_no,
+			"source": default_lead_source,
 		})
 
 		if country:
 			new_lead.country = country
 
-		new_lead.insert(ignore_permissions=True, ignore_mandatory=True)
+		new_lead.flags.ignore_mandatory = True
+		new_lead.insert(ignore_permissions=True)
 		lead = new_lead.name
 	else:
 		old_lead = frappe.get_doc("Lead", lead)
@@ -598,6 +610,9 @@ def make_opportunity_from_lead_form(
 		if phone_no:
 			old_lead.phone = phone_no
 			old_lead_changed = True
+		if designation:
+			old_lead.designation = designation
+			old_lead_changed = True
 
 		# Set current number as primary and set old as secondary
 		if mobile_no and old_lead.mobile_no and old_lead.mobile_no != mobile_no:
@@ -606,7 +621,8 @@ def make_opportunity_from_lead_form(
 			old_lead_changed = True
 
 		if old_lead_changed:
-			old_lead.save(ignore_permissions=True, ignore_mandatory=True)
+			old_lead.flags.ignore_mandatory = True
+			old_lead.save(ignore_permissions=True)
 
 	# Create Opportunity
 	opportunity = frappe.new_doc("Opportunity")
@@ -627,7 +643,8 @@ def make_opportunity_from_lead_form(
 	if opportunity_type:
 		opportunity.opportunity_type = opportunity_type
 
-	opportunity.insert(ignore_permissions=True, ignore_mandatory=True)
+	opportunity.flags.ignore_mandatory = True
+	opportunity.insert(ignore_permissions=True)
 
 	# Create Communication
 	comm = frappe.get_doc({

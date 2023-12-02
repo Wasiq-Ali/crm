@@ -8,7 +8,8 @@ crm.send_message = function(opts, btn) {
 		method: "crm.crm.doctype.opportunity.opportunity.make_opportunity_from_lead_form",
 		btn: btn,
 		args: opts.args,
-		callback: opts.callback
+		callback: opts.callback,
+		error: opts.error,
 	});
 };
 frappe.send_message = crm.send_message;
@@ -21,7 +22,8 @@ crm.subscribe_to_newsletter = function(opts, btn) {
 		method: "frappe.email.doctype.newsletter.newsletter.subscribe",
 		btn: btn,
 		args: {"email": opts.email},
-		callback: opts.callback
+		callback: opts.callback,
+		error: opts.error,
 	});
 };
 frappe.subscribe_to_newsletter = crm.subscribe_to_newsletter;
