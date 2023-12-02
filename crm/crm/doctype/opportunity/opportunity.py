@@ -538,7 +538,7 @@ def create_opportunity_from_communication(communication, ignore_communication_li
 
 
 @frappe.whitelist(allow_guest=True)
-@rate_limit(limit=1000, seconds=60 * 60)
+@rate_limit(limit=10, seconds=60 * 60)
 def make_opportunity_from_lead_form(
 	subject="Website Query",
 	message="",
