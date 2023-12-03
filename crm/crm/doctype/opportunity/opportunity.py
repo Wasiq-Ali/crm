@@ -540,9 +540,9 @@ def create_opportunity_from_communication(communication, ignore_communication_li
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=10, seconds=60 * 60)
 def make_opportunity_from_lead_form(
-	subject="Website Query",
+	sender,
 	message="",
-	sender="",
+	subject="Website Query",
 	full_name="",
 	organization="",
 	designation="",
@@ -636,7 +636,8 @@ def make_opportunity_from_lead_form(
 		"party_name": lead,
 		"status": 'Open',
 		"title": subject,
-		"contact_email": sender
+		"details": message,
+		"contact_email": sender,
 	})
 
 	opportunity_type = get_opportunity_type_from_query_option(subject)

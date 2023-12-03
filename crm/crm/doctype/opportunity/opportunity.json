@@ -19,7 +19,6 @@
   "sales_person",
   "opportunity_type",
   "conversion_document",
-  "lead_classification",
   "column_break_13",
   "transaction_date",
   "due_date",
@@ -49,7 +48,10 @@
   "campaign",
   "territory",
   "column_break_22",
+  "lead_classification",
   "sales_stage",
+  "opportunity_details_section",
+  "details",
   "sec_applies_to",
   "column_break_11",
   "items_section",
@@ -447,6 +449,7 @@
   {
    "fieldname": "due_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Due Date",
    "no_copy": 1
   },
@@ -480,13 +483,25 @@
    "fieldtype": "Data",
    "label": "Contact Designation",
    "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "details",
+   "fieldname": "opportunity_details_section",
+   "fieldtype": "Section Break",
+   "label": "Opportunity Details"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Small Text",
+   "label": "Details"
   }
  ],
  "icon": "fa fa-info-sign",
  "idx": 195,
  "is_calendar_and_gantt": 1,
  "links": [],
- "modified": "2023-12-01 16:32:46.944468",
+ "modified": "2023-12-03 19:03:39.291274",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Opportunity",
