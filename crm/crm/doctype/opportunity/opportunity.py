@@ -413,7 +413,7 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 	else:
 		opp = frappe.get_doc('Opportunity', opportunity)
 
-	if opp.status in ['Lost', 'Converted']:
+	if action and opp.status in ['Lost', 'Converted'] and action not in ("Submit Remarks Only", "Schedule Follow Up"):
 		frappe.throw(_("Opportunity is already {0}").format(opp.status))
 
 	opp.set_follow_up_contact_date(contact_date)
@@ -425,9 +425,10 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 
 		opp.add_next_follow_up(follow_up_date, to_discuss=remarks)
 
-	out = frappe._dict({
-		"opportunity": opp.name,
-	})
+		if opp.status == "Lost":
+			opp.set_is_lost(False)
+
+	out = frappe._dict()
 
 	if action == "Mark As Lost":
 		lost_reason_list = json.loads(lost_reason or "[]")
@@ -440,11 +441,12 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 		appointment_doc = make_appointment(opp.name)
 		out['appointment_doc'] = appointment_doc
 
-	submit_communication(opp, contact_date, remarks, update_follow_up=False)
-
 	opp.flags.ignore_mandatory = True
 	opp.save()
-	opportunity = opp.name
+
+	out.opportunity = opp.name
+
+	submit_communication(opp, contact_date, remarks, update_follow_up=False)
 
 	return out
 
