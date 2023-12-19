@@ -56,6 +56,8 @@
   "secondary_contact_mobile",
   "details_section",
   "voice_of_customer",
+  "column_break_djlqw",
+  "section_break_nn0k5",
   "description",
   "appointment_remarks_section",
   "remarks",
@@ -470,12 +472,20 @@
    "in_standard_filter": 1,
    "label": "Appointment Source",
    "options": "Appointment Source"
+  },
+  {
+   "fieldname": "column_break_djlqw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_nn0k5",
+   "fieldtype": "Section Break"
   }
  ],
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-30 21:10:32.820498",
+ "modified": "2023-12-19 15:05:18.097001",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",
