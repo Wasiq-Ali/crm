@@ -244,6 +244,9 @@ class Opportunity(StatusUpdater):
 		return False
 
 	def is_converted(self):
+		if self.is_new():
+			return False
+
 		appointment = frappe.db.get_value("Appointment", {
 			"opportunity": self.name,
 			"docstatus": (">", 0),
@@ -255,6 +258,9 @@ class Opportunity(StatusUpdater):
 		return False
 
 	def has_communication(self):
+		if self.is_new():
+			return False
+
 		return frappe.db.get_value("Communication", filters={
 			'reference_doctype': self.doctype,
 			'reference_name': self.name,
@@ -437,14 +443,14 @@ def submit_communication_with_action(remarks, action, opportunity, follow_up_dat
 	elif action == "Mark As Closed":
 		opp.set_status(status="Closed", update=True)
 
-	elif action == "Create Appointment":
-		appointment_doc = make_appointment(opp.name)
-		out['appointment_doc'] = appointment_doc
-
 	opp.flags.ignore_mandatory = True
 	opp.save()
 
 	out.opportunity = opp.name
+
+	if action == "Create Appointment":
+		appointment_doc = make_appointment(opp.name)
+		out['appointment_doc'] = appointment_doc
 
 	submit_communication(opp, contact_date, remarks, update_follow_up=False)
 
