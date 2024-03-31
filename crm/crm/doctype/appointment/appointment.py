@@ -7,9 +7,8 @@ from frappe import _
 from frappe.utils.status_updater import StatusUpdater
 from frappe.utils import (
 	cint, today, getdate, get_time, get_datetime, combine_datetime, date_diff, comma_or,
-	format_datetime, formatdate, get_url, now_datetime, add_days, clean_whitespace
+	format_datetime, formatdate, now_datetime, add_days, clean_whitespace
 )
-from frappe.utils.verified_command import get_signed_params
 from crm.crm.doctype.sales_person.sales_person import get_sales_person_from_user
 from frappe.desk.form.assign_to import add as add_assignment, clear as clear_assignments, close_all_assignments
 from frappe.contacts.doctype.address.address import get_default_address
@@ -296,46 +295,6 @@ class Appointment(StatusUpdater):
 		cal_event.starts_on = self.scheduled_dt
 		cal_event.end_on = self.end_dt
 		cal_event.save(ignore_permissions=True)
-
-	def send_confirmation_email(self):
-		if self.docstatus != 0:
-			return
-		if not self.contact_email:
-			return
-
-		verify_url = self.get_verify_url()
-		template = 'confirm_appointment'
-		args = {
-			"link": verify_url,
-			"site_url": frappe.utils.get_url(),
-			"full_name": self.customer_name,
-		}
-
-		frappe.sendmail(recipients=[self.contact_email],
-			template=template,
-			args=args,
-			subject=_('Appointment Confirmation'))
-
-		if frappe.session.user == "Guest":
-			frappe.msgprint('Please check your email to confirm the appointment')
-		else:
-			frappe.msgprint('Appointment was created. But no lead was found. Please check the email to confirm')
-
-	def get_verify_url(self):
-		verify_route = '/book_appointment/verify'
-		params = {
-			'email': self.contact_email,
-			'appointment': self.name
-		}
-		return get_url(verify_route + '?' + get_signed_params(params))
-
-	def set_verified(self, email):
-		if self.docstatus != 0:
-			frappe.throw(_("Appointment is already {0}").format(self.status))
-		if email != self.contact_email:
-			frappe.throw(_('Email verification failed.'))
-
-		self.submit()
 
 	def auto_unassign(self):
 		if self.docstatus == 2 or self.status == "Rescheduled":
