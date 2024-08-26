@@ -19,7 +19,7 @@ class Territory(NestedSet):
 
 def get_territory_subtree(territory, cache=True):
 	def generator():
-		return frappe.get_all("Territory", filters=["subtree of", territory], pluck="name")
+		return frappe.get_all("Territory", filters={"name": ["subtree of", territory]}, pluck="name")
 
 	if cache:
 		return frappe.local_cache("get_territory_subtree", territory, generator)
