@@ -503,22 +503,21 @@ class Appointment(StatusUpdater):
 			doc.update_lead_status()
 			doc.notify_update()
 
-	def dont_send_automated_notification(self):
-		if self.appointment_source:
-			dont_send = frappe.db.get_value("Appointment Source", self.appointment_source, "dont_send_automated_notification")
-			return cint(dont_send)
-		return 0
-
 	def send_appointment_confirmation_notification(self):
-		if self.docstatus == 1 and not self.dont_send_automated_notification():
+		if not self.dont_send_automated_notification():
 			enqueue_template_sms(self, notification_type="Appointment Confirmation")
 
 	def send_appointment_cancellation_notification(self):
-		if self.docstatus == 2:
+		if not self.dont_send_automated_notification():
 			enqueue_template_sms(self, notification_type="Appointment Cancellation")
 
 	def send_appointment_reminder_notification(self):
-		enqueue_template_sms(self, notification_type="Appointment Reminder")
+		if not self.dont_send_automated_notification():
+			enqueue_template_sms(self, notification_type="Appointment Reminder")
+
+	def dont_send_automated_notification(self):
+		return cint(frappe.get_cached_value("Appointment Source", self.appointment_source,
+			"disable_automated_notifications"))
 
 
 def get_agents_sorted_by_asc_workload(date, appointment_type):

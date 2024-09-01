@@ -8,7 +8,10 @@
  "engine": "InnoDB",
  "field_order": [
   "source_name",
-  "details"
+  "section_break_wv6px",
+  "details",
+  "column_break_hqney",
+  "disable_automated_notifications"
  ],
  "fields": [
   {
@@ -21,15 +24,30 @@
   },
   {
    "fieldname": "details",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Small Text",
    "label": "Details"
+  },
+  {
+   "fieldname": "section_break_wv6px",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hqney",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disable_automated_notifications",
+   "fieldtype": "Check",
+   "label": "Disable Automated Notifications"
   }
  ],
  "links": [],
- "modified": "2023-11-28 21:35:15.442066",
+ "modified": "2024-09-02 00:07:41.323840",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Source",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -45,27 +63,22 @@
    "write": 1
   },
   {
-   "create": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Projects User",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Sales User",
-   "share": 1,
-   "write": 1
+   "share": 1
   },
   {
    "email": 1,
