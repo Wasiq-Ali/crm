@@ -503,8 +503,14 @@ class Appointment(StatusUpdater):
 			doc.update_lead_status()
 			doc.notify_update()
 
+	def dont_send_automated_notification(self):
+		if self.appointment_source:
+			dont_send = frappe.db.get_value("Appointment Source", self.appointment_source, "dont_send_automated_notification")
+			return cint(dont_send)
+		return 0
+
 	def send_appointment_confirmation_notification(self):
-		if self.docstatus == 1:
+		if self.docstatus == 1 and not self.dont_send_automated_notification():
 			enqueue_template_sms(self, notification_type="Appointment Confirmation")
 
 	def send_appointment_cancellation_notification(self):
