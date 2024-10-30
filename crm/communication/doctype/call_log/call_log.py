@@ -51,7 +51,7 @@ def get_employees_with_number(number):
 	number = strip_number(number)
 	if not number: return []
 
-	employee_emails = frappe.cache().hget('employees_with_number', number)
+	employee_emails = frappe.cache.hget('employees_with_number', number)
 	if employee_emails: return employee_emails
 
 	employees = frappe.get_all('Employee', filters={
@@ -60,7 +60,7 @@ def get_employees_with_number(number):
 	}, fields=['user_id'])
 
 	employee_emails = [employee.user_id for employee in employees]
-	frappe.cache().hset('employees_with_number', number, employee_emails)
+	frappe.cache.hset('employees_with_number', number, employee_emails)
 
 	return employee_emails
 
