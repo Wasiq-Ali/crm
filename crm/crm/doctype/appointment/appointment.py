@@ -707,7 +707,7 @@ def get_rescheduled_appointment(source_name, target_doc=None):
 	def set_missing_values(source, target):
 		target.run_method("set_missing_values")
 
-	doclist = get_mapped_doc("Appointment", source_name, {
+	mapper = {
 		"Appointment": {
 			"doctype": "Appointment",
 			"field_no_map": [
@@ -726,12 +726,16 @@ def get_rescheduled_appointment(source_name, target_doc=None):
 				"party_name": "party_name",
 				"contact_person": "contact_person",
 				"customer_address": "customer_address",
-				"applies_to_vehicle": "applies_to_vehicle",
 				"voice_of_customer": "voice_of_customer",
 				"description": "description",
 			}
-		}
-	}, target_doc, set_missing_values)
+		},
+		"postprocess": set_missing_values,
+	}
+
+	frappe.utils.call_hook_method("update_reschedule_appointment_mapper", mapper, "Appointment")
+
+	doclist = get_mapped_doc("Appointment", source_name, mapper, target_doc)
 
 	return doclist
 
