@@ -13,7 +13,7 @@ from frappe.utils import getdate, get_time, get_datetime, combine_datetime
 
 class CustomerFeedback(Document):
 	def validate(self):
-		self.set_customer_name()
+		self.set_missing_values()
 		self.set_title()
 		self.set_status()
 		self.get_previous_values()
@@ -56,6 +56,9 @@ class CustomerFeedback(Document):
 
 		if self.feedback_from and self.party_name:
 			self.set_customer_name()
+
+	def set_missing_values(self):
+		self.set_customer_name()
 
 	def set_customer_name(self):
 		self.customer_name = get_customer_name(self.feedback_from, self.party_name)

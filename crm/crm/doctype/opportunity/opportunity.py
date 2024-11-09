@@ -25,10 +25,12 @@ sender_field = "contact_email"
 class Opportunity(StatusUpdater):
 	selling_or_buying = "selling"
 
-	force_party_fields = [
-		'customer_name', 'tax_id', 'tax_cnic', 'tax_strn', 'territory',
-		'address_display', 'contact_display', 'contact_email', 'contact_mobile', 'contact_phone'
-	]
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.force_party_fields = [
+			'customer_name', 'tax_id', 'tax_cnic', 'tax_strn', 'territory',
+			'address_display', 'contact_display', 'contact_email', 'contact_mobile', 'contact_phone'
+		]
 
 	def get_feed(self):
 		return _("From {0}").format(self.get("customer_name") or self.get('party_name'))

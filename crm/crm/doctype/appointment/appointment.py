@@ -22,10 +22,12 @@ import json
 
 
 class Appointment(StatusUpdater):
-	force_party_fields = [
-		'customer_name', 'tax_id', 'tax_cnic', 'tax_strn',
-		'address_display', 'contact_display', 'contact_email', 'secondary_contact_display',
-	]
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.force_party_fields = [
+			'customer_name', 'tax_id', 'tax_cnic', 'tax_strn',
+			'address_display', 'contact_display', 'contact_email', 'secondary_contact_display',
+		]
 
 	def get_feed(self):
 		return _("For {0}").format(self.get("customer_name") or self.get('party_name'))
