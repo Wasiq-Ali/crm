@@ -3,22 +3,20 @@
 
 import frappe
 from frappe import _
-from frappe.utils import getdate, nowdate, cint, format_time, format_datetime, now_datetime
+from frappe.utils import getdate, nowdate, format_time, format_datetime, now_datetime
 from crm.crm.doctype.appointment.appointment import get_appointments_for_reminder_notification,\
 	get_appointment_reminders_scheduled_time, get_reminder_date_from_appointment_date, automated_reminder_enabled
 
-date_format = "d/MM/y"
-time_format = "hh:mm a"
-datetime_format = "{0}, {1}".format(date_format, time_format)
-
 
 class AppointmentSheetReport(object):
+	date_format = "d/MM/y"
+	time_format = "hh:mm a"
+	datetime_format = "{0}, {1}".format(date_format, time_format)
+
 	def __init__(self, filters=None):
 		self.filters = frappe._dict(filters or {})
 		self.filters.from_date = getdate(self.filters.from_date or nowdate())
 		self.filters.to_date = getdate(self.filters.to_date or nowdate())
-
-		self.is_vehicle_service = cint('Vehicles' in frappe.get_active_domains())
 
 	def run(self):
 		self.get_data()
@@ -30,26 +28,31 @@ class AppointmentSheetReport(object):
 
 	def get_data(self):
 		conditions = self.get_conditions()
+		conditions_str = "and {}".format(" and ".join(conditions)) if conditions else ""
 
-		extra_rows = ""
-		if self.is_vehicle_service:
-			extra_rows = ", a.vehicle_license_plate, a.vehicle_unregistered, a.vehicle_chassis_no, a.vehicle_engine_no"
+		select_fields = self.get_select_fields()
+		select_fields_str = ", ".join(select_fields)
 
-		self.data = frappe.db.sql("""
-			select a.name as appointment, a.appointment_type, a.appointment_source, a.voice_of_customer, a.remarks,
-				a.scheduled_dt, a.scheduled_date, a.scheduled_time, a.appointment_duration, a.end_dt,
-				a.appointment_for, a.party_name, a.customer_name,
-				a.contact_display, a.contact_mobile, a.contact_phone, a.contact_email,
-				a.applies_to_variant_of, a.applies_to_variant_of_name, a.applies_to_item, a.applies_to_item_name,
-				max(n.last_sent_dt) as last_sent_dt, a.confirmation_dt, a.status
-				{0}
+		self.data = frappe.db.sql(f"""
+			select {select_fields_str}
 			from `tabAppointment` a
 			left join `tabNotification Count` n on n.reference_doctype = 'Appointment' and n.reference_name = a.name
 				and n.notification_type = 'Appointment Reminder' and n.notification_medium = 'SMS'
-			where a.docstatus = 1 {1}
+			where a.docstatus = 1 {conditions_str}
 			group by a.name
 			order by a.scheduled_dt, a.creation
-		""".format(extra_rows, conditions), self.filters, as_dict=1)
+		""", self.filters, as_dict=1)
+
+	def get_select_fields(self):
+		return [
+			"a.name as appointment", "a.appointment_type", "a.appointment_source",
+			"a.voice_of_customer", "a.remarks",
+			"a.scheduled_dt", "a.scheduled_date", "a.scheduled_time", "a.appointment_duration", "a.end_dt",
+			"a.appointment_for", "a.party_name", "a.customer_name",
+			"a.contact_display", "a.contact_mobile", "a.contact_phone", "a.contact_email",
+			"a.applies_to_variant_of", "a.applies_to_variant_of_name", "a.applies_to_item", "a.applies_to_item_name",
+			"max(n.last_sent_dt) as last_sent_dt", "a.confirmation_dt", "a.status",
+		]
 
 	def get_project_data(self):
 		appointment_list = [d.appointment for d in self.data]
@@ -82,9 +85,9 @@ class AppointmentSheetReport(object):
 
 		for d in self.data:
 			if d.last_sent_dt:
-				d.reminder = "Last Sent: {0}".format(format_datetime(d.last_sent_dt, datetime_format))
+				d.reminder = "Last Sent: {0}".format(format_datetime(d.last_sent_dt, self.datetime_format))
 			elif d.scheduled_reminder_dt:
-				d.reminder = "Scheduled: {0}".format(format_datetime(d.scheduled_reminder_dt, datetime_format))
+				d.reminder = "Scheduled: {0}".format(format_datetime(d.scheduled_reminder_dt, self.datetime_format))
 
 	def process_data(self):
 		for d in self.data:
@@ -98,10 +101,10 @@ class AppointmentSheetReport(object):
 			self.set_formatted_datetime(d)
 
 	def set_formatted_datetime(self, d):
-		d.scheduled_dt_fmt = format_datetime(d.scheduled_dt, datetime_format)
-		d.scheduled_time_fmt = format_time(d.scheduled_time, time_format)
+		d.scheduled_dt_fmt = format_datetime(d.scheduled_dt, self.datetime_format)
+		d.scheduled_time_fmt = format_time(d.scheduled_time, self.time_format)
 
-		d.confirmation_dt_fmt = format_datetime(d.confirmation_dt, datetime_format)
+		d.confirmation_dt_fmt = format_datetime(d.confirmation_dt, self.datetime_format)
 
 	def get_conditions(self):
 		conditions = []
@@ -118,7 +121,7 @@ class AppointmentSheetReport(object):
 		if self.filters.get("appointment_type"):
 			conditions.append("a.appointment_type = %(appointment_type)s")
 
-		return "and {}".format(" and ".join(conditions)) if conditions else ""
+		return conditions
 
 	def get_columns(self):
 		columns = [
@@ -128,24 +131,16 @@ class AppointmentSheetReport(object):
 			{'label': _("Party"), 'fieldname': 'party_name', 'fieldtype': 'Dynamic Link', 'options': 'appointment_for', 'width': 100},
 			{'label': _("Customer Name"), 'fieldname': 'customer_name', 'fieldtype': 'Data', 'width': 150},
 			{'label': _("Contact #"), 'fieldname': 'contact_number', 'fieldtype': 'Data', 'width': 100},
-			{"label": _("Model") if self.is_vehicle_service else _("Item"),
-				"fieldname": "applies_to_variant_of_name", "fieldtype": "Data", "width": 120},
-			{"label": _("Variant Code") if self.is_vehicle_service else _("Item Code"),
-				"fieldname": "applies_to_item", "fieldtype": "Link", "options": "Item", "width": 120},
+			{"label": _("Item"), "fieldname": "applies_to_variant_of_name", "fieldtype": "Data", "width": 120},
+			{"label": _("Item Code"), "fieldname": "applies_to_item", "fieldtype": "Link", "options": "Item", "width": 120},
 		]
-
-		if self.is_vehicle_service:
-			columns += [
-				{"label": _("Reg No"), "fieldname": "vehicle_license_plate", "fieldtype": "Data", "width": 80},
-				{"label": _("Chassis No"), "fieldname": "vehicle_chassis_no", "fieldtype": "Data", "width": 150},
-			]
 
 		columns += [
 			{"label": _("Voice of Customer"), "fieldname": "voice_of_customer", "fieldtype": "Data", "width": 200},
 			{"label": _("Remarks"), "fieldname": "remarks", "fieldtype": "Data", "width": 200, "editable": 1},
 			{'label': _("Status"), 'fieldname': 'status', 'fieldtype': 'Data', 'width': 70},
 			{'label': _("Project"), 'fieldname': 'project', 'fieldtype': 'Link', 'width': 100, 'options': 'Project'},
-			{'label': _("Appointment Source"), 'fieldname': 'appointment_source', 'fieldtype': 'Data', 'width': 100},
+			{'label': _("Source"), 'fieldname': 'appointment_source', 'fieldtype': 'Data', 'width': 100},
 			{"label": _("Reminder"), "fieldname": "reminder", "fieldtype": "Data", "width": 200},
 			{"label": _("Confirmation Time"), "fieldname": "confirmation_dt_fmt", "fieldtype": "Data", "width": 140},
 		]
