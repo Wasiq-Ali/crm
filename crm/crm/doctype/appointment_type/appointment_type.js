@@ -2,7 +2,13 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Appointment Type', {
-	// refresh: function(frm) {
-
-	// }
+	setup: function(frm) {
+		frm.set_query("sales_persons", () => {
+			return {
+				filters: {
+					is_group: 0,
+				}
+			}
+		})
+	}
 });

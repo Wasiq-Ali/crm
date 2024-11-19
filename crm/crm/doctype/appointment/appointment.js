@@ -48,6 +48,24 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		this.frm.set_query('secondary_contact_person', () => {
 			return frappe.contacts.contact_query(this.frm.doc);
 		});
+
+		this.frm.set_query('sales_person', () => {
+			let filters = {
+				appointment_type: this.frm.doc.appointment_type,
+			};
+			if (this.frm.doc.scheduled_dt && this.frm.doc.end_dt) {
+				filters["scheduled_dt"] = this.frm.doc.scheduled_dt;
+				filters["end_dt"] = this.frm.doc.end_dt;
+			}
+			if (!this.frm.is_new()) {
+				filters["appointment"] = this.frm.doc.name;
+			}
+
+			return {
+				query: "crm.crm.doctype.appointment.appointment.appointment_sales_person_query",
+				filters: filters,
+			}
+		});
 	}
 
 	set_appointment_for() {

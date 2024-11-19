@@ -41,6 +41,12 @@ frappe.query_reports["Appointment Sheet"] = {
 			fieldtype: "Link",
 			options: "Appointment Type",
 		},
+		{
+			fieldname: "sales_person",
+			label: __("Sales Person"),
+			fieldtype: "Link",
+			options: "Sales Person",
+		},
 	],
 
 	formatter: function(value, row, column, data, default_formatter) {

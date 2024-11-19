@@ -11,17 +11,16 @@
   "email_reminders",
   "column_break_4",
   "validate_availability",
-  "auto_assign_agent",
+  "validate_sales_person_availability",
+  "sales_person_mandatory",
   "availability_section",
   "number_of_agents",
+  "sales_persons",
   "column_break_8",
   "appointment_duration",
-  "column_break_kqjwq",
   "advance_booking_days",
   "slots_section",
   "availability_of_slots",
-  "agents_section",
-  "agent_list",
   "holidays_section",
   "column_break_lyep1"
  ],
@@ -52,12 +51,6 @@
    "label": "Number of Available Agents"
   },
   {
-   "fieldname": "agent_list",
-   "fieldtype": "Table MultiSelect",
-   "label": "Agents",
-   "options": "Assignment Rule User"
-  },
-  {
    "default": "60",
    "fieldname": "appointment_duration",
    "fieldtype": "Int",
@@ -85,18 +78,7 @@
    "default": "0",
    "fieldname": "validate_availability",
    "fieldtype": "Check",
-   "label": "Validate Availability"
-  },
-  {
-   "fieldname": "agents_section",
-   "fieldtype": "Section Break",
-   "label": "Agent Assignment"
-  },
-  {
-   "default": "0",
-   "fieldname": "auto_assign_agent",
-   "fieldtype": "Check",
-   "label": "Auto Assign Agent"
+   "label": "Validate Time Slot Availability"
   },
   {
    "fieldname": "column_break_8",
@@ -113,10 +95,6 @@
    "label": "Create Calendar Event"
   },
   {
-   "fieldname": "column_break_kqjwq",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "holidays_section",
    "fieldtype": "Section Break",
    "label": "Holidays"
@@ -124,10 +102,28 @@
   {
    "fieldname": "column_break_lyep1",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_persons",
+   "fieldtype": "Table MultiSelect",
+   "label": "Sales Persons",
+   "options": "Appointment Sales Person"
+  },
+  {
+   "default": "0",
+   "fieldname": "validate_sales_person_availability",
+   "fieldtype": "Check",
+   "label": "Validate Sales Person Availability"
+  },
+  {
+   "default": "0",
+   "fieldname": "sales_person_mandatory",
+   "fieldtype": "Check",
+   "label": "Sales Person Mandatory before Confirmation"
   }
  ],
  "links": [],
- "modified": "2023-12-01 00:20:47.150285",
+ "modified": "2024-11-20 00:12:03.360433",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",

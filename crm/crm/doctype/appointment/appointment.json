@@ -57,6 +57,7 @@
   "details_section",
   "voice_of_customer",
   "column_break_djlqw",
+  "sales_person",
   "section_break_nn0k5",
   "description",
   "appointment_remarks_section",
@@ -134,8 +135,7 @@
    "label": "Start Date/Time",
    "no_copy": 1,
    "read_only": 1,
-   "reqd": 1,
-   "search_index": 1
+   "reqd": 1
   },
   {
    "fieldname": "appointment_type",
@@ -160,8 +160,7 @@
    "fieldtype": "Datetime",
    "label": "End Date/Time",
    "no_copy": 1,
-   "read_only": 1,
-   "search_index": 1
+   "read_only": 1
   },
   {
    "fetch_from": "appointment_type.appointment_duration",
@@ -480,12 +479,23 @@
   {
    "fieldname": "section_break_nn0k5",
    "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_person",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Sales Person",
+   "no_copy": 1,
+   "options": "Sales Person",
+   "search_index": 1
   }
  ],
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-19 15:05:18.097001",
+ "modified": "2024-11-19 23:36:06.150142",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

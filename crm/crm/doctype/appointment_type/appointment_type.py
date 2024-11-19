@@ -24,8 +24,8 @@ class AppointmentType(Document):
 			frappe.throw(_("Appointment Duration cannot be negative"))
 
 	def validate_number_of_agents(self):
-		if self.get('agent_list'):
-			self.number_of_agents = len(self.agent_list)
+		if self.get('sales_persons'):
+			self.number_of_agents = len(self.sales_persons)
 
 		if cint(self.number_of_agents) <= 0:
 			frappe.throw(_("Number of Available Agents must be a positive number"))
@@ -112,8 +112,8 @@ class AppointmentType(Document):
 	def is_holiday(self, date):
 		return False
 
-	def get_agents(self):
-		return [agent.user for agent in self.agent_list]
+	def get_sales_persons(self):
+		return [d.sales_person for d in self.sales_persons]
 
 
 def time_in_range(start, end, x):

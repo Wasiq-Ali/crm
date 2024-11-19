@@ -45,7 +45,7 @@ class AppointmentSheetReport(object):
 
 	def get_select_fields(self):
 		return [
-			"a.name as appointment", "a.appointment_type", "a.appointment_source",
+			"a.name as appointment", "a.appointment_type", "a.appointment_source", "a.sales_person",
 			"a.voice_of_customer", "a.remarks",
 			"a.scheduled_dt", "a.scheduled_date", "a.scheduled_time", "a.appointment_duration", "a.end_dt",
 			"a.appointment_for", "a.party_name", "a.customer_name",
@@ -121,6 +121,11 @@ class AppointmentSheetReport(object):
 		if self.filters.get("appointment_type"):
 			conditions.append("a.appointment_type = %(appointment_type)s")
 
+		if self.filters.get("sales_person"):
+			lft, rgt = frappe.db.get_value("Sales Person", self.filters.sales_person, ["lft", "rgt"])
+			conditions.append("""a.sales_person in (select name from `tabSales Person`
+				where lft >= {0} and rgt <= {1})""".format(lft, rgt))
+
 		return conditions
 
 	def get_columns(self):
@@ -128,7 +133,7 @@ class AppointmentSheetReport(object):
 			{'label': _("Appointment"), 'fieldname': 'appointment', 'fieldtype': 'Link', 'options': 'Appointment', 'width': 100},
 			{'label': _("Date"), 'fieldname': 'scheduled_date', 'fieldtype': 'Date', 'width': 80},
 			{'label': _("Time"), 'fieldname': 'scheduled_time_fmt', 'fieldtype': 'Data', 'width': 70},
-			{'label': _("Party"), 'fieldname': 'party_name', 'fieldtype': 'Dynamic Link', 'options': 'appointment_for', 'width': 100},
+			{'label': _("Party"), 'fieldname': 'party_name', 'fieldtype': 'Dynamic Link', 'options': 'appointment_for', 'width': 80},
 			{'label': _("Customer Name"), 'fieldname': 'customer_name', 'fieldtype': 'Data', 'width': 150},
 			{'label': _("Contact #"), 'fieldname': 'contact_number', 'fieldtype': 'Data', 'width': 100},
 			{"label": _("Item"), "fieldname": "applies_to_variant_of_name", "fieldtype": "Data", "width": 120},
@@ -137,6 +142,7 @@ class AppointmentSheetReport(object):
 
 		columns += [
 			{"label": _("Voice of Customer"), "fieldname": "voice_of_customer", "fieldtype": "Data", "width": 200},
+			{'label': _("Sales Person"), 'fieldname': 'sales_person', 'fieldtype': 'Link', 'options': "Sales Person", 'width': 120},
 			{"label": _("Remarks"), "fieldname": "remarks", "fieldtype": "Data", "width": 200, "editable": 1},
 			{'label': _("Status"), 'fieldname': 'status', 'fieldtype': 'Data', 'width': 70},
 			{'label': _("Project"), 'fieldname': 'project', 'fieldtype': 'Link', 'width': 100, 'options': 'Project'},
