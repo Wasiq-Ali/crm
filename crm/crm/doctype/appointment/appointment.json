@@ -12,10 +12,15 @@
   "column_break_3",
   "opportunity",
   "previous_appointment",
-  "previous_appointment_dt",
   "column_break_6",
-  "confirmation_dt",
+  "previous_appointment_dt",
   "amended_from",
+  "section_break_chg7",
+  "confirmation_dt",
+  "column_break_mbkn",
+  "check_in_dt",
+  "column_break_cmhw",
+  "check_in_user",
   "appointment_time_section",
   "scheduled_date",
   "scheduled_time",
@@ -63,11 +68,12 @@
   "appointment_remarks_section",
   "remarks",
   "more_information_section",
-  "calendar_event",
-  "column_break_41",
   "status",
+  "is_checked_in",
   "is_closed",
-  "is_missed"
+  "is_missed",
+  "column_break_41",
+  "calendar_event"
  ],
  "fields": [
   {
@@ -100,7 +106,7 @@
    "in_standard_filter": 1,
    "label": "Status",
    "no_copy": 1,
-   "options": "Draft\nOpen\nClosed\nRescheduled\nMissed\nCancelled",
+   "options": "Draft\nOpen\nChecked In\nClosed\nRescheduled\nMissed\nCancelled",
    "read_only": 1,
    "reqd": 1,
    "search_index": 1
@@ -490,12 +496,49 @@
    "no_copy": 1,
    "options": "Sales Person",
    "search_index": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "is_checked_in",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Checked In",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_dt",
+   "fieldtype": "Datetime",
+   "label": "Check In Date/Time",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_in_user",
+   "fieldtype": "Link",
+   "label": "Checked In By",
+   "no_copy": 1,
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_chg7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mbkn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_cmhw",
+   "fieldtype": "Column Break"
   }
  ],
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-19 23:36:06.150142",
+ "modified": "2024-11-20 14:38:04.113530",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",

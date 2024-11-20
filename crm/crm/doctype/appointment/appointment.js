@@ -86,7 +86,12 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 		}
 
 		if (this.frm.doc.docstatus == 1 && this.frm.doc.status != "Rescheduled") {
-			if (["Open", "Missed"].includes(this.frm.doc.status)) {
+			if (this.frm.doc.status != "Checked In") {
+				this.frm.add_custom_button(__('Check In'), () => this.update_status("Checked In"),
+					__("Set Status"));
+			}
+
+			if (["Open", "Checked In", "Missed"].includes(this.frm.doc.status)) {
 				this.frm.add_custom_button(__('Reschedule'), () => this.reschedule_appointment(),
 					__("Set Status"));
 			}
@@ -101,7 +106,11 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 					__("Set Status"));
 			}
 
-			if ((this.frm.doc.status == "Closed" && this.frm.doc.is_closed) || this.frm.doc.status == "Missed") {
+			if (
+				(this.frm.doc.status == "Closed" && this.frm.doc.is_closed)
+				|| (this.frm.doc.status == "Missed" && this.frm.doc.is_missed)
+				|| (this.frm.doc.status == "Checked In" && this.frm.doc.is_checked_in)
+			) {
 				this.frm.add_custom_button(__('Re-Open'), () => this.update_status("Open"),
 					__("Set Status"));
 			}

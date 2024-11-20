@@ -256,7 +256,7 @@ class Appointment(StatusUpdater):
 			if previous_appointment.docstatus == 2:
 				frappe.throw(_("Previous {0} is cancelled")
 					.format(frappe.get_desk_link("Appointment", self.previous_appointment)))
-			if previous_appointment.status not in ["Open", "Missed"]:
+			if previous_appointment.status not in ["Open", "Checked In", "Missed"]:
 				frappe.throw(_("Previous {0} is {1}. Only Open and Missed appointments can be resheduled")
 					.format(frappe.get_desk_link("Appointment", self.previous_appointment), previous_appointment.status))
 
@@ -336,12 +336,16 @@ class Appointment(StatusUpdater):
 	def set_status(self, update=False, status=None, update_modified=True):
 		previous_status = self.status
 		previous_is_closed = self.is_closed
+		previous_is_missed = self.is_missed
+		previous_is_checked_in = self.is_checked_in
+		previous_check_in_dt = self.check_in_dt
 
 		if self.docstatus == 0:
 			self.status = "Draft"
 
 		elif self.docstatus == 1:
 			if status == "Open":
+				self.is_checked_in = 0
 				self.is_closed = 0
 				self.is_missed = 0
 			elif status == "Closed":
@@ -350,6 +354,9 @@ class Appointment(StatusUpdater):
 			elif status == "Missed":
 				self.is_missed = 1
 				self.is_closed = 0
+			elif status == "Checked In":
+				self.is_checked_in = 1
+				self.is_missed = 0
 
 			# Submitted or cancelled rescheduled appointment
 			is_rescheduled = frappe.get_all("Appointment", filters={'previous_appointment': self.name, 'docstatus': ['>', 0]})
@@ -358,6 +365,8 @@ class Appointment(StatusUpdater):
 				self.status = "Rescheduled"
 			elif self.is_appointment_closed():
 				self.status = "Closed"
+			elif self.is_checked_in:
+				self.status = "Checked In"
 			elif self.is_missed or getdate(today()) > getdate(self.scheduled_date):
 				self.status = "Missed"
 			else:
@@ -366,13 +375,30 @@ class Appointment(StatusUpdater):
 		else:
 			self.status = "Cancelled"
 
+		if not previous_is_checked_in and self.is_checked_in:
+			self.check_in_dt = now_datetime()
+			self.check_in_user = frappe.session.user
+		if not self.is_checked_in:
+			self.check_in_dt = None
+			self.check_in_user = None
+
 		self.add_status_comment(previous_status)
 
 		if update:
-			if previous_status != self.status or previous_is_closed != self.is_closed:
+			if (
+				previous_status != self.status
+				or previous_is_closed != self.is_closed
+				or previous_is_missed != self.is_missed
+				or previous_is_checked_in != self.is_checked_in
+				or previous_check_in_dt != self.check_in_dt
+			):
 				self.db_set({
 					'status': self.status,
+					'is_checked_in': self.is_checked_in,
 					'is_closed': self.is_closed,
+					'is_missed': self.is_missed,
+					'check_in_dt': self.check_in_dt,
+					'check_in_user': self.check_in_user,
 				}, update_modified=update_modified)
 
 	def is_appointment_closed(self):
