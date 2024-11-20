@@ -256,7 +256,7 @@ class Appointment(StatusUpdater):
 			if previous_appointment.docstatus == 2:
 				frappe.throw(_("Previous {0} is cancelled")
 					.format(frappe.get_desk_link("Appointment", self.previous_appointment)))
-			if previous_appointment.status not in ["Open", "Checked In", "Missed"]:
+			if previous_appointment.status not in ["Open", "Checked In", "Missed"] and not self.amended_from:
 				frappe.throw(_("Previous {0} is {1}. Only Open and Missed appointments can be resheduled")
 					.format(frappe.get_desk_link("Appointment", self.previous_appointment), previous_appointment.status))
 

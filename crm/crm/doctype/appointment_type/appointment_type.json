@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "appointment_type_name",
+  "section_break_7qgv",
   "create_calendar_event",
   "email_reminders",
   "column_break_4",
@@ -120,10 +121,15 @@
    "fieldname": "sales_person_mandatory",
    "fieldtype": "Check",
    "label": "Sales Person Mandatory before Confirmation"
+  },
+  {
+   "fieldname": "section_break_7qgv",
+   "fieldtype": "Section Break",
+   "label": "Configuration"
   }
  ],
  "links": [],
- "modified": "2024-11-20 00:12:03.360433",
+ "modified": "2024-11-20 19:12:22.979821",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
