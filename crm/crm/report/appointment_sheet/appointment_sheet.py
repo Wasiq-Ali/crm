@@ -142,9 +142,9 @@ class AppointmentSheetReport(object):
 
 		columns += [
 			{"label": _("Voice of Customer"), "fieldname": "voice_of_customer", "fieldtype": "Data", "width": 200},
-			{'label': _("Sales Person"), 'fieldname': 'sales_person', 'fieldtype': 'Link', 'options': "Sales Person", 'width': 120},
+			{'label': _("Status"), 'fieldname': 'status', 'fieldtype': 'Data', 'width': 80},
+			{'label': _("Sales Person"), 'fieldname': 'sales_person', 'fieldtype': 'Link', 'options': "Sales Person", 'width': 110},
 			{"label": _("Remarks"), "fieldname": "remarks", "fieldtype": "Data", "width": 200, "editable": 1},
-			{'label': _("Status"), 'fieldname': 'status', 'fieldtype': 'Data', 'width': 70},
 			{'label': _("Project"), 'fieldname': 'project', 'fieldtype': 'Link', 'width': 100, 'options': 'Project'},
 			{'label': _("Source"), 'fieldname': 'appointment_source', 'fieldtype': 'Data', 'width': 100},
 			{"label": _("Reminder"), "fieldname": "reminder", "fieldtype": "Data", "width": 200},

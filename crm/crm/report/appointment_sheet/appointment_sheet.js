@@ -54,7 +54,7 @@ frappe.query_reports["Appointment Sheet"] = {
 		var link;
 
 		if (data.status == "Rescheduled") {
-			style['color'] = 'grey';
+			style['color'] = 'var(--gray-500)';
 		}
 
 		if (column.fieldname == 'reminder') {
@@ -71,7 +71,7 @@ frappe.query_reports["Appointment Sheet"] = {
 				if (indicator) {
 					var indicator_title = indicator[0];
 					var indicator_color = indicator[1];
-					return `<span class="indicator ${indicator_color}"><span>${indicator_title || data.status}</span></span>`;
+					value = `<span class="indicator ${indicator_color}"><span>${indicator_title || data.status}</span></span>`;
 				}
 			}
 		}

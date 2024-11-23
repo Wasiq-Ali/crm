@@ -472,7 +472,6 @@
   {
    "fieldname": "appointment_source",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Appointment Source",
    "options": "Appointment Source"
@@ -537,7 +536,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 15:54:06.078713",
+ "modified": "2024-11-20 20:06:16.242809",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",
