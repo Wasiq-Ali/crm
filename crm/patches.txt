@@ -1,4 +1,5 @@
 [pre_model_sync]
+crm.patches.rename_service_user_roles
 
 [post_model_sync]
 crm.patches.refactor_lead_status

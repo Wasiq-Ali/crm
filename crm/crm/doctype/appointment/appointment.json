@@ -536,7 +536,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-20 20:06:16.242809",
+ "modified": "2024-11-29 14:37:26.790690",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",
@@ -592,7 +592,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Projects User",
+   "role": "Service User",
    "share": 1,
    "submit": 1,
    "write": 1

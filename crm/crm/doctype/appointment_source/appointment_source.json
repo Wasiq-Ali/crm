@@ -43,7 +43,7 @@
   }
  ],
  "links": [],
- "modified": "2024-09-02 00:07:41.323840",
+ "modified": "2024-11-29 14:37:28.866311",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Source",
@@ -68,7 +68,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Projects User",
+   "role": "Service User",
    "share": 1
   },
   {

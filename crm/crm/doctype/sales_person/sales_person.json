@@ -130,7 +130,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-11-28 18:06:25.952875",
+ "modified": "2024-11-29 14:37:29.420158",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Sales Person",
@@ -165,12 +165,12 @@
   {
    "read": 1,
    "report": 1,
-   "role": "Projects User"
+   "role": "Service User"
   },
   {
    "read": 1,
    "report": 1,
-   "role": "Projects User (Read Only)"
+   "role": "Service User (Read Only)"
   },
   {
    "read": 1,
