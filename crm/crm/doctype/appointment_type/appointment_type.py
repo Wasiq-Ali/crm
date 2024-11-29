@@ -10,9 +10,6 @@ from frappe.model.document import Document
 
 
 class AppointmentType(Document):
-	min_date = '01/01/1970 '
-	format_string = "%d/%m/%Y %H:%M:%S"
-
 	def validate(self):
 		self.validate_appointment_duration()
 		self.validate_number_of_agents()
@@ -32,8 +29,8 @@ class AppointmentType(Document):
 
 	def validate_availability_of_slots(self):
 		for record in self.availability_of_slots:
-			from_time = datetime.datetime.strptime(self.min_date + record.from_time, self.format_string)
-			to_time = datetime.datetime.strptime(self.min_date + record.to_time, self.format_string)
+			from_time = combine_datetime("1970-01-01", record.from_time)
+			to_time = combine_datetime("1970-01-01", record.to_time)
 			self.validate_from_and_to_time(record, from_time, to_time)
 			self.duration_is_divisible(from_time, to_time)
 
