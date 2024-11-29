@@ -129,13 +129,25 @@
   }
  ],
  "links": [],
- "modified": "2024-11-29 14:37:26.655652",
+ "modified": "2024-11-29 23:00:35.036529",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,
@@ -154,7 +166,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User",
+   "role": "CR User",
    "share": 1
   },
   {
@@ -163,7 +175,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales User (Read Only)",
+   "role": "Sales User",
    "share": 1
   },
   {

@@ -173,7 +173,7 @@
   }
  ],
  "links": [],
- "modified": "2023-11-30 13:10:31.716913",
+ "modified": "2024-11-29 17:19:50.833800",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Customer Feedback",
@@ -188,6 +188,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User",
+   "share": 1,
    "write": 1
   },
   {

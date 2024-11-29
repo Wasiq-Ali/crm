@@ -130,7 +130,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2024-11-29 14:37:29.420158",
+ "modified": "2024-11-29 16:27:15.453339",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Sales Person",
@@ -141,6 +141,20 @@
   {
    "create": 1,
    "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Customer Master Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "export": 1,
    "read": 1,
    "report": 1,
    "role": "Sales Manager",
@@ -173,6 +187,15 @@
    "role": "Service User (Read Only)"
   },
   {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User",
+   "share": 1
+  },
+  {
    "read": 1,
    "report": 1,
    "role": "Accounts User"
@@ -181,19 +204,6 @@
    "permlevel": 1,
    "read": 1,
    "role": "Accounts Manager",
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "import": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Customer Master Manager",
-   "share": 1,
    "write": 1
   }
  ],

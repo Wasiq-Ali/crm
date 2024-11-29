@@ -25,7 +25,7 @@
  "icon": "fa fa-flag",
  "idx": 1,
  "links": [],
- "modified": "2023-11-28 21:35:16.436268",
+ "modified": "2024-11-29 22:49:30.222801",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Industry Type",
@@ -42,13 +42,6 @@
    "write": 1
   },
   {
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Sales User"
-  },
-  {
    "create": 1,
    "email": 1,
    "print": 1,
@@ -57,6 +50,27 @@
    "role": "Customer Master Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User (Read Only)"
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User"
   }
  ],
  "quick_entry": 1,

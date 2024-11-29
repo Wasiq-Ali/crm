@@ -26,7 +26,7 @@
   }
  ],
  "links": [],
- "modified": "2023-11-28 21:35:14.133397",
+ "modified": "2024-11-29 22:42:42.967750",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Lead Source",
@@ -61,6 +61,15 @@
    "read": 1,
    "report": 1,
    "role": "Sales User (Read Only)",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User",
    "share": 1
   }
  ],

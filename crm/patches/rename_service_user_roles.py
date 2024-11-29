@@ -3,6 +3,7 @@ import frappe
 
 def execute():
 	rename_map = {
+		"Projects Manager": "Service Manager",
 		"Projects User": "Service User",
 		"Projects User (Read Only)": "Service User (Read Only)",
 	}

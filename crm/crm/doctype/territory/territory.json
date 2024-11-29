@@ -107,7 +107,7 @@
  "idx": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-11-28 21:29:21.019148",
+ "modified": "2024-11-29 22:47:17.339115",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Territory",
@@ -152,6 +152,13 @@
    "read": 1,
    "report": 1,
    "role": "Sales User (Read Only)"
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User"
   },
   {
    "read": 1,

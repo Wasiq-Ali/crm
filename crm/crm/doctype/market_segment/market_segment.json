@@ -17,7 +17,7 @@
   }
  ],
  "links": [],
- "modified": "2023-11-28 21:35:17.637815",
+ "modified": "2024-11-29 22:48:47.246400",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Market Segment",
@@ -34,6 +34,33 @@
    "role": "Sales Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User (Read Only)",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "CR User",
+   "share": 1
   }
  ],
  "quick_entry": 1,

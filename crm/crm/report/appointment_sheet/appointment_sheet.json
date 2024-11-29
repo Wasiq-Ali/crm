@@ -8,7 +8,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2024-11-29 14:57:04.927695",
+ "modified": "2024-11-29 23:19:43.912266",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Sheet",
@@ -19,13 +19,16 @@
  "report_type": "Script Report",
  "roles": [
   {
-   "role": "Sales Manager"
-  },
-  {
    "role": "Sales User"
   },
   {
+   "role": "Sales User (Read Only)"
+  },
+  {
    "role": "Service User"
+  },
+  {
+   "role": "CR User"
   }
  ],
  "timeout": 0

@@ -536,7 +536,7 @@
  "is_calendar_and_gantt": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-29 14:37:26.790690",
+ "modified": "2024-11-29 16:19:43.792870",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment",
@@ -553,7 +553,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Sales Manager",
+   "role": "CR User",
    "share": 1,
    "submit": 1,
    "write": 1
@@ -583,32 +583,22 @@
    "share": 1
   },
   {
-   "amend": 1,
-   "cancel": 1,
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Service User",
-   "share": 1,
-   "submit": 1,
-   "write": 1
+   "share": 1
   },
   {
-   "cancel": 1,
-   "create": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Guest",
-   "share": 1,
-   "submit": 1,
-   "write": 1
+   "role": "Service User (Read Only)",
+   "share": 1
   }
  ],
  "search_fields": "party_name, customer_name, scheduled_dt",
