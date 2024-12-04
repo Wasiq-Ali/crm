@@ -70,8 +70,8 @@ class Lead(StatusUpdater):
 		validate_mobile_no(self.get('mobile_no_2'))
 
 	def validate_tax_id(self):
-		from frappe.regional.pakistan import validate_ntn_cnic_strn
-		validate_ntn_cnic_strn(self.get('tax_id'), self.get('tax_cnic'), self.get('tax_strn'))
+		from frappe.regional.regional import validate_tax_ids
+		validate_tax_ids(self.get('tax_id'), self.get('tax_cnic'), self.get('tax_strn'))
 
 	def check_email_id_is_unique(self):
 		if self.email_id:
