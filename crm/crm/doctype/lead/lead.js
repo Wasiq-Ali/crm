@@ -31,8 +31,8 @@ crm.LeadController = class LeadController extends frappe.ui.form.Controller {
 		frappe.regional.pakistan.format_cnic(this.frm, "tax_cnic");
 		frappe.regional.pakistan.format_strn(this.frm, "tax_strn");
 
-		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no");
-		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no_2");
+		frappe.regional.format_mobile_no(this.frm, "mobile_no");
+		frappe.regional.format_mobile_no(this.frm, "mobile_no_2");
 	}
 
 	set_dynamic_link() {
@@ -90,10 +90,10 @@ crm.LeadController = class LeadController extends frappe.ui.form.Controller {
 	}
 
 	mobile_no() {
-		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no");
+		frappe.regional.format_mobile_no(this.frm, "mobile_no");
 	}
 	mobile_no_2() {
-		frappe.regional.pakistan.format_mobile_no(this.frm, "mobile_no_2");
+		frappe.regional.format_mobile_no(this.frm, "mobile_no_2");
 	}
 };
 

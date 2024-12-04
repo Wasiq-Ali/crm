@@ -61,14 +61,13 @@ class Lead(StatusUpdater):
 				validate_email_address(self.email_id, True)
 
 	def validate_mobile_no(self):
-		from frappe.regional.pakistan import validate_mobile_pakistan
-
+		from frappe.regional.regional import validate_mobile_nos
 		if self.get('mobile_no_2') and not self.get('mobile_no'):
 			self.mobile_no = self.mobile_no_2
 			self.mobile_no_2 = ""
 
-		validate_mobile_pakistan(self.get('mobile_no'))
-		validate_mobile_pakistan(self.get('mobile_no_2'))
+		validate_mobile_nos(self.get('mobile_no'))
+		validate_mobile_nos(self.get('mobile_no_2'))
 
 	def validate_tax_id(self):
 		from frappe.regional.pakistan import validate_ntn_cnic_strn
