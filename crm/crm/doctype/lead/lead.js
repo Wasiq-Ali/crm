@@ -78,15 +78,15 @@ crm.LeadController = class LeadController extends frappe.ui.form.Controller {
 
 	tax_id() {
 		frappe.regional.pakistan.format_ntn(this.frm, "tax_id");
-		frappe.regional.pakistan.validate_duplicate_tax_id(this.frm.doc, "tax_id");
+		frappe.regional.validate_duplicate_tax_id(this.frm.doc, "tax_id");
 	}
 	tax_cnic() {
 		frappe.regional.pakistan.format_cnic(this.frm, "tax_cnic");
-		frappe.regional.pakistan.validate_duplicate_tax_id(this.frm.doc, "tax_cnic");
+		frappe.regional.validate_duplicate_tax_id(this.frm.doc, "tax_cnic");
 	}
 	tax_strn() {
 		frappe.regional.pakistan.format_strn(this.frm, "tax_strn");
-		frappe.regional.pakistan.validate_duplicate_tax_id(this.frm.doc, "tax_strn");
+		frappe.regional.validate_duplicate_tax_id(this.frm.doc, "tax_strn");
 	}
 
 	mobile_no() {
