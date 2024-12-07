@@ -120,7 +120,7 @@ class Lead(StatusUpdater):
 def make_opportunity(source_name, target_doc=None):
 	def set_missing_values(source, target):
 		target.opportunity_from = 'Lead'
-		target.run_method('set_missing_values')
+		target.run_method("set_missing_values")
 
 	target_doc = get_mapped_doc("Lead", source_name, {
 		"Lead": {
