@@ -166,9 +166,11 @@ class Appointment(StatusUpdater):
 		appointment_type_doc = frappe.get_cached_doc("Appointment Type", self.appointment_type)
 
 		# check if in past
-		if getdate(self.scheduled_dt) < getdate(today()):
-			frappe.msgprint(_("Warning: Scheduled Date {0} is in the past")
-				.format(frappe.bold(frappe.format(getdate(self.scheduled_date)))), indicator="orange")
+		if get_datetime(self.end_dt) < now_datetime():
+			timeslot_str = self.get_timeslot_str()
+			frappe.msgprint(_("Time slot {0} is in the past").format(
+				timeslot_str
+			), raise_exception=appointment_type_doc.validate_past_timeslot)
 
 		advance_days = date_diff(getdate(self.scheduled_dt), today())
 		if cint(appointment_type_doc.advance_booking_days) and advance_days > cint(appointment_type_doc.advance_booking_days):

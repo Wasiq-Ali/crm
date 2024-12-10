@@ -13,6 +13,7 @@
   "email_reminders",
   "column_break_4",
   "validate_availability",
+  "validate_past_timeslot",
   "validate_sales_person_availability",
   "sales_person_mandatory",
   "availability_section",
@@ -127,10 +128,16 @@
    "fieldname": "section_break_7qgv",
    "fieldtype": "Section Break",
    "label": "Configuration"
+  },
+  {
+   "default": "0",
+   "fieldname": "validate_past_timeslot",
+   "fieldtype": "Check",
+   "label": "Validate Past Time Slot Selection"
   }
  ],
  "links": [],
- "modified": "2024-12-10 22:43:51.428276",
+ "modified": "2024-12-10 23:27:04.804960",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
