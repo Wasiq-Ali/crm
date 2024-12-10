@@ -110,7 +110,7 @@ crm.AppointmentSlotPicker = Class.extend({
 			// card styling
 			var muted = "";
 			if (slot.available <= 0) {
-				muted = "text-light";
+				muted = "text-extra-muted";
 			}
 
 			var selected_class = me.timeslot_in_scheduled_time(slot) ? "selected" : "";
