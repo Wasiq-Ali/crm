@@ -104,13 +104,13 @@ crm.AppointmentSlotPicker = Class.extend({
 					indicator_color = "green";
 				}
 			} else {
-				indicator_color = "grey";
+				indicator_color = "gray";
 			}
 
 			// card styling
 			var muted = "";
 			if (slot.available <= 0) {
-				muted = "text-faded";
+				muted = "text-light";
 			}
 
 			var selected_class = me.timeslot_in_scheduled_time(slot) ? "selected" : "";
@@ -120,7 +120,7 @@ crm.AppointmentSlotPicker = Class.extend({
 			if (slot.available > 0) {
 				availability_text = `<b>${slot.available}</b> ${__("Available")}`;
 			} else {
-				availability_text = __("Unavailable");
+				availability_text = `<span style="color: var(--red-400)">${__("Unavailable")}</span>`;
 			}
 
 			// booked text
@@ -133,10 +133,12 @@ crm.AppointmentSlotPicker = Class.extend({
 
 			var slot_html = `
 			<div class="col-md-2 col-sm-3 col-xs-6">
-				<div class="card ${selected_class} ${muted} appointment-timeslot"
-						data-timeslot-start="${slot.timeslot_start}"
-						data-timeslot-end="${slot.timeslot_end}"
-						data-timeslot-duration="${slot.timeslot_duration}">
+				<div
+					class="card ${selected_class} ${muted} appointment-timeslot"
+					data-timeslot-start="${slot.timeslot_start}"
+					data-timeslot-end="${slot.timeslot_end}"
+					data-timeslot-duration="${slot.timeslot_duration}"
+				>
 					<div class="card-body text-center" style="padding: 10px;">
 						<div class="card-title bold">
 							<span class="indicator ${indicator_color}" style="font-size: 15px; color: inherit">
