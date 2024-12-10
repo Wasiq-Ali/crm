@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "field:appointment_type_name",
  "creation": "2022-07-16 21:59:01.053126",
  "doctype": "DocType",
@@ -129,7 +130,7 @@
   }
  ],
  "links": [],
- "modified": "2024-11-29 23:00:35.036529",
+ "modified": "2024-12-10 22:43:51.428276",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Appointment Type",
