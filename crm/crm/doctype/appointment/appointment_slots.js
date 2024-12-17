@@ -113,6 +113,13 @@ crm.AppointmentSlotPicker = Class.extend({
 				muted = "text-extra-muted";
 			}
 
+			let now_dt = frappe.datetime.str_to_obj(frappe.datetime.system_datetime());
+			let end_dt = frappe.datetime.str_to_obj(slot.timeslot_end);
+			if (now_dt > end_dt) {
+				indicator_color = "gray";
+				muted = "text-extra-muted";
+			}
+
 			var selected_class = me.timeslot_in_scheduled_time(slot) ? "selected" : "";
 
 			// availability text
