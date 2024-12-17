@@ -27,6 +27,7 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 	onload() {
 		super.onload();
 		this.setup_queries();
+		this.setup_min_date();
 	}
 
 	setup_queries() {
@@ -319,6 +320,14 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 					}
 				}
 			});
+		}
+	}
+
+	setup_min_date() {
+		let date_field = this.frm.get_field("scheduled_date");
+		if (date_field) {
+			let min_date = frappe.datetime.str_to_obj(frappe.datetime.get_today());
+			date_field.datepicker.update("minDate", min_date);
 		}
 	}
 
