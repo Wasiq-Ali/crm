@@ -27,6 +27,9 @@ crm.Appointment = class Appointment extends crm.QuickContacts {
 	onload() {
 		super.onload();
 		this.setup_queries();
+	}
+
+	onload_post_render() {
 		this.setup_min_date();
 	}
 
