@@ -3,6 +3,7 @@
 # For license information, please see license.txt
 
 import frappe
+import erpnext
 from frappe import _
 from frappe.utils.status_updater import StatusUpdater
 from frappe.utils import (
@@ -77,6 +78,9 @@ class Appointment(StatusUpdater):
 		self.validate_next_document_on_cancel()
 		self.update_opportunity_status()
 		self.send_appointment_cancellation_notification()
+
+	def before_print(self, print_settings=None):
+		self.company_address_doc = erpnext.get_company_address_doc(self)
 
 	def after_delete(self):
 		self.update_previous_appointment()
